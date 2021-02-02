@@ -4,6 +4,7 @@ import os
 import tqdm
 import argparse
 from typing import Tuple, List
+from utils import timeit
 
 def get_optical_flow(video : np.array, frame_shape = (224, 224) : Tuple) -> np.array:
     gray_video = []
@@ -54,7 +55,9 @@ def video_to_npy(file_path: str, resize = (224, 224) : Tuple) -> np.array:
 
     return result
 
-def save_to_npy(file_dir: str, save_dir: str) -> None:
+
+@timeit
+def save_to_npy(file_dir: str, save_dir: str, resize : Tuple) -> None:
     assert os.path.exists(file_dir), f"ERROR: {file_dir} not found!"
 
     if not os.path.isdir(save_dir):
@@ -65,6 +68,21 @@ def save_to_npy(file_dir: str, save_dir: str) -> None:
     with open("list_map.txt", "w") as f:
         for v in tqdm.tqdm(videos):
             f.write(f"{v}\t{count}\n")
-            data  = video_to_npy(file_path = os.path.join(file_dir, v))
+            data  = video_to_npy(file_path = os.path.join(file_dir, v), resize = resize)
             data  = np.uint8(data)
             count += 1
+            np.save(os.path.join(save_dir, str(count) + '.npy'), data)
+
+
+if __name__ == '__main__':
+
+    parse = argparse.ArgumentParser(description= "Convert video to npy file")
+    parse.add_argument("--file_dir", dest= "file_dir", type=str)
+    parse.add_argument("--save_dir", dest= "save_dir", type=str)
+    parse.add_argument("--frame_shape", dest= "frame_shape", default=(224, 224))
+
+
+    args = parse.parse_args()
+    print(f"Preprocessing: file_dir: {args.file_dir} and save_dir: {args.save_dir}")
+    save_to_npy(file_dir = args.file_dir, save_dir= args.save_dir, resize = args.frame_shape)
+    print("Done!")
