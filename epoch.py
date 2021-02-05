@@ -86,13 +86,14 @@ def val(epoch, data_loader, model, criterion, device, val_log):
     accuracies = AverageMeter()
 
     for _, (inputs, targets) in enumerate(data_loader):
-        inputs, targets = inputs.to(device), targets.to(device)
-
+        inputs = inputs.to(device)
+        targets_onehot = torch.nn.functional.one_hot(targets).type(torch.FloatTensor)
+        targets_onehot = targets_onehot.to(device)
         # no need to track grad in eval mode
         with torch.no_grad():
             outputs = model(inputs)
-            loss = criterion(outputs, targets)
-            acc = calculate_accuracy(outputs, targets)
+            loss = criterion(outputs, targets_onehot)
+            acc = calculate_accuracy(outputs, targets.to(device))
 
         losses.update(loss.item(), inputs.size(0))
         accuracies.update(acc, inputs.size(0))
