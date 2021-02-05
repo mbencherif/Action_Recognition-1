@@ -14,10 +14,13 @@ def VioNet_C3D(config):
     device = config.device
     model = C3D(num_classes=2).to(device)
 
-    # state_dict = torch.load('weights/C3D_Kinetics.pth')
-    # for state in state_dict.keys():
-    #     print(state)
-    # model.load_state_dict(state_dict)
+    state_dict = torch.load('weights/C3D_Kinetics.pth')
+    for state in state_dict.keys():
+        print(state)
+    print("-------------------")
+    for param in model.parameters():
+        print(param)
+    model.load_state_dict(state_dict)
     params = model.parameters()
 
     return model, params
