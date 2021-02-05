@@ -19,11 +19,13 @@ def get_dataset(dataset_path):
     train_nonfight_data = os.listdir(os.path.join(dataset_path, 'train', 'NonFight'))
     
     for name in train_nonfight_data:
+        name = name.replace('.avi', '')
         # name = os.path.join('train', 'NonFight', file_name)
         train_database[name] = {}
         train_database[name]['subset'] = 'training'
         train_database[name]['annotations'] = {'label': 'NonFight'}
     for name in train_fight_data:
+        name = name.replace('.avi', '')
         # name = os.path.join('train', 'Fight', file_name)
         train_database[name] = {}
         train_database[name]['subset'] = 'training'
@@ -34,12 +36,14 @@ def get_dataset(dataset_path):
     val_no_data = os.listdir(os.path.join(dataset_path, 'val', 'NonFight'))
 
     for name in val_no_data:
+        name = name.replace('.avi', '')
         train_database[name] = {}
         train_database[name]['subset'] = 'validation'
         train_database[name]['annotations'] = {'label': 'NonFight'}
     
     for name in val_fi_data:
         # name = os.path.join('val', 'Fight', file_name)
+        name = name.replace('.avi', '')
         train_database[name] = {}
         train_database[name]['subset'] = 'validation'
         train_database[name]['annotations'] = {'label': 'Fight'}
