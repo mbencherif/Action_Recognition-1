@@ -18,7 +18,8 @@ def train(
     end_time = time.time()
     for i, (inputs, targets) in enumerate(data_loader):
         inputs  = inputs.to(device)
-        targets = targets.to(device)
+        targets_onehot = torch.nn.functional.one_hot(targets)
+        targets_onehot = targets_onehot.to(device)
         data_time.update(time.time() - end_time)
         # zero the parameter gradients
         optimizer.zero_grad()
@@ -26,8 +27,8 @@ def train(
         # forward
         outputs = model(inputs)
         # print(outputs, targets)
-        loss = criterion(outputs, targets)
-        acc = calculate_accuracy(outputs, targets)
+        loss = criterion(outputs, targets_onehot)
+        acc = calculate_accuracy(outputs, targets_onehot)
 
         # meter
         losses.update(loss.item(), inputs.size(0))
