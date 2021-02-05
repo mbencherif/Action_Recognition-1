@@ -103,7 +103,7 @@ def main(config):
         ['epoch', 'loss', 'acc'])
 
     # criterion = nn.CrossEntropyLoss().to(device)
-    criterion = nn.BCEWithLogitsLoss().to(device)
+    criterion = nn.BCELoss().to(device)
 
     learning_rate = config.learning_rate
     momentum = config.momentum

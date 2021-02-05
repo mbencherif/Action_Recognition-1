@@ -64,6 +64,7 @@ class C3D(nn.Module):
         self.features.add_module('relu', nn.ReLU(inplace=True))
 
         self.classifier = nn.Linear(512, num_classes)
+        self.soft = nn.Softmax()
 
         for m in self.modules():
             if isinstance(m, nn.Conv3d):
@@ -80,5 +81,6 @@ class C3D(nn.Module):
         out = self.features.forward(x)
         out = F.adaptive_avg_pool3d(out, (1, 1, 1)).view(out.size(0), -1)
         out = self.classifier(out)
+        out = self.sort(out)
 
         return out
