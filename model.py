@@ -18,7 +18,7 @@ def VioNet_C3D(config):
     for state in state_dict.keys():
         print(state)
     print("-------------------")
-    for param in model.state_dict.keys():
+    for param in model.named_modules():
         print(param)
     model.load_state_dict(state_dict)
     params = model.parameters()
