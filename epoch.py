@@ -18,7 +18,7 @@ def train(
     end_time = time.time()
     for i, (inputs, targets) in enumerate(data_loader):
         inputs  = inputs.to(device)
-        targets_onehot = torch.nn.functional.one_hot(targets)
+        targets_onehot = torch.nn.functional.one_hot(targets).type(torch.FloatTensor)
         targets_onehot = targets_onehot.to(device)
         data_time.update(time.time() - end_time)
         # zero the parameter gradients
