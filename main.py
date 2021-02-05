@@ -154,6 +154,6 @@ if __name__ == '__main__':
     config.dataset = 'rwf-2000'
     config.train_batch = 16
     config.val_batch = 16
-    config.learning_rate = 0.01
+    config.learning_rate = 0.1
     config.num_cv = 1
     main(config)
