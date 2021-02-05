@@ -1,4 +1,4 @@
-## VioNet
+<!-- ## VioNet
 
 Efficient Violence Detection Using 3D Convolutional Neural Networks.
 
@@ -46,4 +46,4 @@ Efficient Violence Detection Using 3D Convolutional Neural Networks.
 
 - Download dataset and put them into dir `../VioDB`. [[Dataset](https://drive.google.com/file/d/1zxttpCDegQUmPHE8WwD8EMPpCngRRVkm/view?usp=sharing)]
 
-- Before runing `main.py`, you might need to modify the parameters at the end of the code.
+- Before runing `main.py`, you might need to modify the parameters at the end of the code. -->
