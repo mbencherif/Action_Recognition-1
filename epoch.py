@@ -26,6 +26,7 @@ def train(
 
         # forward
         outputs = model(inputs)
+        print(outputs, targets)
         loss = criterion(outputs, targets)
         acc = calculate_accuracy(outputs, targets)
 
