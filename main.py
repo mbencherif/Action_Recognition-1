@@ -108,10 +108,12 @@ def main(config):
     momentum = config.momentum
     weight_decay = config.weight_decay
 
-    optimizer = torch.optim.SGD(params=params,
-                                lr=learning_rate,
-                                momentum=momentum,
-                                weight_decay=weight_decay)
+    # optimizer = torch.optim.SGD(params=params,
+    #                             lr=learning_rate,
+    #                             momentum=momentum,
+    #                             weight_decay=weight_decay)
+    
+    optimizer = torch.optim.Adam(params=params, lr = learning_rate, weight_decay= weight_decay)
 
     scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer,
                                                            verbose=True,
