@@ -8,7 +8,7 @@ class Config:
             num_cv='',
             sample_duration=16,
             stride=1,
-            sample_size=(112, 112),
+            sample_size=(224, 224),
             ft_begin_idx=3,
             acc_baseline=0.92,
             train_batch=32,
