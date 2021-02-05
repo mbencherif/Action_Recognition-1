@@ -12,7 +12,7 @@ if __name__ == '__main__':
     for fl in sub_folders:
         for cls in classes_name:
             lst_video = os.listdir(os.path.join(root_path, fl, cls))
-            for vi in tqdm.tqdm(lst_video[:5]):
+            for vi in tqdm.tqdm(lst_video):
                 
                 file_path = os.path.join(root_path, fl, cls, vi)
                 assert os.path.isfile(file_path), "ERROR"
