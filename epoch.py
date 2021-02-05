@@ -18,7 +18,8 @@ def train(
     end_time = time.time()
 
     for i, (inputs, targets) in enumerate(data_loader):
-        inputs, targets = inputs.to(device), targets.to(device)
+        inputs  = inputs.to(device)
+        print(targets)
         data_time.update(time.time() - end_time)
 
         # zero the parameter gradients
