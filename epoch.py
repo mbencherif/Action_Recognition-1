@@ -18,7 +18,7 @@ def train(
     end_time = time.time()
     for i, (inputs, targets) in enumerate(data_loader):
         inputs  = inputs.to(device)
-        targets_onehot = torch.nn.functional.one_hot(targets).type(torch.FloatTensor)
+        targets_onehot = torch.nn.functional.one_hot(targets, num_classes=2).type(torch.FloatTensor)
         targets_onehot = targets_onehot.to(device)
         data_time.update(time.time() - end_time)
         # zero the parameter gradients
@@ -87,7 +87,7 @@ def val(epoch, data_loader, model, criterion, device, val_log):
 
     for _, (inputs, targets) in enumerate(data_loader):
         inputs = inputs.to(device)
-        targets_onehot = torch.nn.functional.one_hot(targets).type(torch.FloatTensor)
+        targets_onehot = torch.nn.functional.one_hot(targets, num_classes = 2).type(torch.FloatTensor)
         targets_onehot = targets_onehot.to(device)
         # no need to track grad in eval mode
         with torch.no_grad():
