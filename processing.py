@@ -30,8 +30,8 @@ def get_dataset(dataset_path):
         train_database[name]['annotations'] = {'label': 'Fight'}
 
     val_database = {}
-    val_fi_data = os.listdir(os.path.join(database_path, 'val', 'Fight'))
-    val_no_data = os.listdir(os.path.join(database_path, 'val', 'NonFight'))
+    val_fi_data = os.listdir(os.path.join(dataset_path, 'val', 'Fight'))
+    val_no_data = os.listdir(os.path.join(dataset_path, 'val', 'NonFight'))
 
     for file_name in val_no_data:
         name = os.path.join('val', 'NonFight', file_name)
