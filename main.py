@@ -53,14 +53,9 @@ def main(config):
     target_transform = Label()
 
     train_batch = config.train_batch
-    if dataset == 'rwf-2000':
-      train_data = VioDB(g_path + '/VioDB/{}_jpg/frames/'.format(dataset),
-                       g_path + '/VioDB/{}_jpg{}.json'.format(dataset, cv), 'training',
+    train_data = VioDB(g_path + '/RWF_2000/frames/',
+                       g_path + '/RWF_2000.json', 'training',
                        spatial_transform, temporal_transform, target_transform, dataset)
-    else:
-      train_data = VioDB(g_path + '/VioDB/{}_jpg/'.format(dataset),
-                        g_path + '/VioDB/{}_jpg{}.json'.format(dataset, cv), 'training',
-                        spatial_transform, temporal_transform, target_transform)
     train_loader = DataLoader(train_data,
                               batch_size=train_batch,
                               shuffle=True,
@@ -76,27 +71,20 @@ def main(config):
 
     val_batch = config.val_batch
 
-    if dataset == 'rwf-2000':
-      val_data = VioDB(g_path + '/VioDB/{}_jpg/frames/'.format(dataset),
-                     g_path + '/VioDB/{}_jpg{}.json'.format(dataset, cv), 'validation',
+    val_data = VioDB(g_path + '/RWF_2000/frames/',
+                     g_path + '/RWF_2000.json', 'validation',
                      spatial_transform, temporal_transform, target_transform, dataset)
-    else:
-      val_data = VioDB(g_path + '/VioDB/{}_jpg/'.format(dataset),
-                      g_path + '/VioDB/{}_jpg{}.json'.format(dataset, cv), 'validation',
-                      spatial_transform, temporal_transform, target_transform)
     val_loader = DataLoader(val_data,
                             batch_size=val_batch,
                             shuffle=False,
                             num_workers=4,
                             pin_memory=True)
 
-    # make dir
     if not os.path.exists('./pth'):
         os.mkdir('./pth')
     if not os.path.exists('./log'):
         os.mkdir('./log')
 
-    # log
     batch_log = Log(
         './log/{}_fps{}_{}_batch{}.log'.format(
             config.model,
@@ -113,7 +101,6 @@ def main(config):
                                              dataset, cv),
         ['epoch', 'loss', 'acc'])
 
-    # prepare
     criterion = nn.CrossEntropyLoss().to(device)
 
     learning_rate = config.learning_rate
