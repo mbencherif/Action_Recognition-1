@@ -19,7 +19,8 @@ def train(
 
     for i, (inputs, targets) in enumerate(data_loader):
         inputs  = inputs.to(device)
-        print(targets)
+        targets = torch.Tensor(targets)
+        print(target.shape)
         data_time.update(time.time() - end_time)
 
         # zero the parameter gradients
