@@ -16,9 +16,9 @@ from target_transforms import Label, Video
 
 from utils import Log
 
-# g_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-# print('main g_path:', g_path)
-g_path = "."
+g_path = os.path.dirname(os.path.abspath(__file__))
+print('main g_path:', g_path)
+# g_path = "."
 
 def main(config):
     # load model
