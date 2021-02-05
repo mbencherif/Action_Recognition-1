@@ -4,8 +4,9 @@ import json
 
 
 def load_labels(dataset_path):
-    if os.path.isdir(dataset_path):
-        labels = os.listdir(dataset_path)
+    # if os.path.isdir(dataset_path):
+    #     labels = os.listdir(dataset_path)
+    labels = ['Fight', 'NonFight']
     return labels
 
 

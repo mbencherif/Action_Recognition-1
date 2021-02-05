@@ -19,9 +19,12 @@ if __name__ == '__main__':
                 
                 cap = cv2.VideoCapture(file_path)
                 len_frames = int(cap.get(7))   
-                os.mkdir(os.path.join(dst_foler, vi.replace('.avi', '')))         
+                if not os.path.exists(os.path.join(dst_foler, vi.replace('.avi', ''))):
+                    os.mkdir(os.path.join(dst_foler, vi.replace('.avi', '')))         
                 try: 
                     for i in range(len_frames - 1):
+                        if os.path.exists(os.path.join(dst_foler, vi.replace('.avi', ''), "image_%05d.jpg" %(i + 1))):
+                            break
                         _, frame = cap.read()
                         frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
                         cv2.imwrite(os.path.join(dst_foler, vi.replace('.avi', ''), "image_%05d.jpg" %(i + 1)), frame)
@@ -31,8 +34,9 @@ if __name__ == '__main__':
                 
                 finally:
                     cap.release()
-                    with open(os.path.join(dst_foler, vi.replace('.avi', ''), 'n_frames'), 'w') as fw:
-                        fw.write(str(len_frames - 1))                      
+                    if not os.path.exists(os.path.join(dst_foler, vi.replace('.avi', ''), 'n_frames')):
+                        with open(os.path.join(dst_foler, vi.replace('.avi', ''), 'n_frames'), 'w') as fw:
+                            fw.write(str(len_frames - 1))                      
                 
                 
                 
