@@ -81,6 +81,6 @@ class C3D(nn.Module):
         out = self.features.forward(x)
         out = F.adaptive_avg_pool3d(out, (1, 1, 1)).view(out.size(0), -1)
         out = self.classifier(out)
-        out = self.sort(out)
+        out = self.soft(out)
 
         return out
