@@ -164,9 +164,7 @@ class VioDB(Dataset):
         target = self.videos[index]
         if self.target_transform:
             target = self.target_transform(target)
-        t = [0, 0]
-        t[target] = 1
-        return clip, t
+        return clip, target
 
     def __len__(self):
         return len(self.videos)

@@ -16,21 +16,21 @@ def train(
     model.train()
 
     end_time = time.time()
-
+    target_onehot = torch.FloatTensor(16, 2)
     for i, (inputs, targets) in enumerate(data_loader):
         inputs  = inputs.to(device)
-        targets = torch.Tensor(targets)
-        print(target.shape)
+        targets = targets.to(device)
         data_time.update(time.time() - end_time)
-
+        targets_onehot.zero()
+        target_onehot.scatter_(1, targets, 1)
         # zero the parameter gradients
         optimizer.zero_grad()
 
         # forward
         outputs = model(inputs)
         # print(outputs, targets)
-        loss = criterion(outputs, targets)
-        acc = calculate_accuracy(outputs, targets)
+        loss = criterion(outputs, targets_onehot)
+        acc = calculate_accuracy(outputs, targets_onehot)
 
         # meter
         losses.update(loss.item(), inputs.size(0))
