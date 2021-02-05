@@ -102,7 +102,8 @@ def main(config):
                                              dataset, cv),
         ['epoch', 'loss', 'acc'])
 
-    criterion = nn.CrossEntropyLoss().to(device)
+    # criterion = nn.CrossEntropyLoss().to(device)
+    criterion = nn.BCEWithLogitsLoss().to(device)
 
     learning_rate = config.learning_rate
     momentum = config.momentum
