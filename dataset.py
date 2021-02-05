@@ -81,7 +81,7 @@ def make_dataset(root_path, annotation_path, subset, dataset_name):
         video_path = os.path.join(
             root_path, video_name
         )  # $1/$2/$3
-        print('video_path:', video_path)
+        # print('video_path:', video_path)
         if not os.path.exists(video_path):
             continue
 
@@ -100,7 +100,7 @@ def make_dataset(root_path, annotation_path, subset, dataset_name):
           video_path = os.path.join(
               root_path, video_label, video_name
           )  # $1/$2/$3
-          print('video_path:', video_path)
+        #   print('video_path:', video_path)
           if not os.path.exists(video_path):
               continue
 
@@ -114,7 +114,7 @@ def make_dataset(root_path, annotation_path, subset, dataset_name):
           }
 
           dataset.append(video)
-    print('dataset: ', dataset)
+    # print('dataset: ', dataset)
 
     return dataset, index_to_class
 
@@ -135,7 +135,7 @@ class VioDB(Dataset):
             root_path, annotation_path, subset, dataset_name
         )
 
-        print('self.videos: ', self.videos)
+        # print('self.videos: ', self.videos)
 
         self.spatial_transform = spatial_transform
         self.temporal_transform = temporal_transform

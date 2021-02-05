@@ -67,7 +67,8 @@ class C3D(nn.Module):
 
         for m in self.modules():
             if isinstance(m, nn.Conv3d):
-                nn.init.kaiming_normal_(m.weight.data)
+                # nn.init.kaiming_normal_(m.weight.data)
+                nn.init.kaiming_uniform_(m.weight.data)
             elif isinstance(m, nn.BatchNorm3d):
                 m.weight.data.fill_(1)
                 m.bias.data.zero_()
