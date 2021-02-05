@@ -4,7 +4,7 @@ from PIL import Image
 
 import torch
 from torch.utils.data import Dataset
-
+import numpy as np
 
 def imread(path):
     with Image.open(path) as img:
@@ -164,8 +164,9 @@ class VioDB(Dataset):
         target = self.videos[index]
         if self.target_transform:
             target = self.target_transform(target)
-
-        return clip, target
+        t = np.zeros(shape = (1, 2))
+        t[0][target] = 1
+        return clip, t
 
     def __len__(self):
         return len(self.videos)
