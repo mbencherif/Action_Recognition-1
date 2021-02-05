@@ -148,10 +148,9 @@ if __name__ == '__main__':
         ft_begin_idx=0,
     )
 
-    config.dataset = dataset
+    config.dataset = 'rwf-2000'
     config.train_batch = 32
     config.val_batch = 32
     config.learning_rate = 1e-2
-
     config.num_cv = 1
     main(config)
