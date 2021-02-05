@@ -28,7 +28,7 @@ def train(
         outputs = model(inputs)
         # print(outputs, targets)
         loss = criterion(outputs, targets_onehot)
-        acc = calculate_accuracy(outputs, targets_onehot)
+        acc = calculate_accuracy(outputs, targets.to(device))
 
         # meter
         losses.update(loss.item(), inputs.size(0))
