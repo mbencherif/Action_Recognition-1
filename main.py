@@ -125,8 +125,8 @@ def main(config):
     loss_baseline = 1
 
     for i in range(config.num_epoch):
-        # train(i, train_loader, model, criterion, optimizer, device, batch_log,
-        #       epoch_log)
+        train(i, train_loader, model, criterion, optimizer, device, batch_log,
+              epoch_log)
         val_loss, val_acc = val(i, val_loader, model, criterion, device,
                                 val_log)
         scheduler.step(val_loss)
@@ -155,6 +155,6 @@ if __name__ == '__main__':
     config.dataset = 'rwf-2000'
     config.train_batch = 16
     config.val_batch = 16
-    config.learning_rate = 0.1
+    config.learning_rate = 1e-2
     config.num_cv = 1
     main(config)
