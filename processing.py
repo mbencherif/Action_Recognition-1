@@ -13,7 +13,7 @@ def get_dataset(dataset_path):
     
     assert os.path.exists(dataset_path), IOError(f"{dataset_path} not exists")
     
-    train_dataset = {}
+    train_database = {}
     
     train_fight_data = os.listdir(os.path.join(dataset_path, 'train', 'Fight'))
     train_nonfight_data = os.listdir(os.path.join(dataset_path, 'train', 'NonFight'))
