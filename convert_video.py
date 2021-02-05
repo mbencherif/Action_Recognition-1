@@ -23,11 +23,10 @@ if __name__ == '__main__':
                     os.mkdir(os.path.join(dst_foler, vi.replace('.avi', '')))         
                 try: 
                     for i in range(len_frames - 1):
-                        if os.path.exists(os.path.join(dst_foler, vi.replace('.avi', ''), "image_%05d.jpg" %(i + 1))):
-                            break
-                        _, frame = cap.read()
-                        frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-                        cv2.imwrite(os.path.join(dst_foler, vi.replace('.avi', ''), "image_%05d.jpg" %(i + 1)), frame)
+                        if not os.path.exists(os.path.join(dst_foler, vi.replace('.avi', ''), "image_%05d.jpg" %(i + 1))):
+                            _, frame = cap.read()
+                            frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+                            cv2.imwrite(os.path.join(dst_foler, vi.replace('.avi', ''), "image_%05d.jpg" %(i + 1)), frame)
                 except Exception as e:
                     print(e)
                     print("ERROR", vi)      
