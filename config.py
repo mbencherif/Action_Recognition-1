@@ -6,7 +6,7 @@ class Config:
             dataset,
             device,
             num_cv='',
-            sample_duration=32,
+            sample_duration=16,
             stride=1,
             sample_size=(224, 224),
             ft_begin_idx=3,
