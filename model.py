@@ -15,6 +15,8 @@ def VioNet_C3D(config):
     model = C3D(num_classes=2).to(device)
 
     state_dict = torch.load('weights/C3D_Kinetics.pth')
+    for state in state_dict.keys():
+        print(state)
     model.load_state_dict(state_dict)
     params = model.parameters()
 
