@@ -25,7 +25,7 @@ if __name__ == '__main__':
                         
                         _, frame = cap.read()
                         frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-                        cv2.imwrite(os.path.join(dst_foler, vi.replace('.avi', ''), image_{%05d}.jpg".format(i + 1)), frame)
+                        cv2.imwrite(os.path.join(dst_foler, vi.replace('.avi', ''), "image_{%05d}.jpg".format(i + 1)), frame)
                 except:
                     print("ERROR", vi)      
                 
