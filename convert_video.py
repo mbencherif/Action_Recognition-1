@@ -12,13 +12,14 @@ if __name__ == '__main__':
     for fl in sub_folders:
         for cls in classes_name:
             lst_video = os.listdir(os.path.join(root_path, fl, cls))
-            for vi in tqdm.tqdm(lst_video):
+            for vi in tqdm.tqdm(lst_video[:5]):
                 
                 file_path = os.path.join(root_path, fl, cls, vi)
                 assert os.path.isfile(file_path), "ERROR"
                 
                 cap = cv2.VideoCapture(file_path)
-                len_frames = int(cap.get(7))            
+                len_frames = int(cap.get(7))   
+                os.mkdir(os.path.join(dst_foler, vi.replace('.avi', '')))         
                 try: 
                     for i in range(len_frames - 1):
                         
