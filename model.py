@@ -14,7 +14,7 @@ def C3D(config):
     device = config.device
     model = C3D(num_classes=2).to(device)
 
-    state_dict = torch.load('weights/C3D_Kinetics.pth')
+    state_dict = torch.load('weights/c3d.pth')
     # for state in state_dict.keys():
     #     print(state)
     # print("-------------------")
@@ -47,7 +47,7 @@ def densenet(config):
                         sample_size=sample_size,
                         sample_duration=sample_duration).to(device)
 
-    state_dict = torch.load('weights/DenseNet_Kinetics.pth')
+    state_dict = torch.load('weights/densenet.pth')
     model.load_state_dict(state_dict)
 
     params = dn.get_fine_tuning_params(model, ft_begin_idx)
@@ -65,7 +65,7 @@ def densenet_lean(config):
                        sample_size=sample_size,
                        sample_duration=sample_duration).to(device)
 
-    state_dict = torch.load('weights/DenseNetLean_Kinetics.pth')
+    state_dict = torch.load('weights/densenet_lean.pth')
     model.load_state_dict(state_dict)
 
     params = dn.get_fine_tuning_params(model, ft_begin_idx)
