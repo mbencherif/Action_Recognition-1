@@ -145,11 +145,11 @@ def main(config):
 if __name__ == '__main__':
     device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
     config = Config(
-        'densenet',
+        'densenet_lean',
         'rwf-2000',
         device=device,
         num_epoch=150,
-        acc_baseline=0.92,
+        acc_baseline=0.80,
         ft_begin_idx=0,
     )
 
