@@ -135,8 +135,8 @@ def main(config):
                                       val_loss < loss_baseline):
             torch.save(
                 model.state_dict(),
-                '/pth/{}_fps{}_{}{}_{}_{:.4f}_{:.6f}.pth'.format(
-                    config.model, sample_duration, dataset, cv, i, val_acc,
+                '{}/pth/{}_fps{}_{}{}_{}_{:.4f}_{:.6f}.pth'.format(
+                    config.output, config.model, sample_duration, dataset, cv, i, val_acc,
                     val_loss))
             acc_baseline = val_acc
             loss_baseline = val_loss
