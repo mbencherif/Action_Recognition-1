@@ -113,7 +113,7 @@ def main(config):
     #                             lr=learning_rate,
     #                             momentum=momentum,
     #                             weight_decay=weight_decay)
-    
+
     optimizer = torch.optim.Adam(params=params, lr = learning_rate, weight_decay= weight_decay)
 
     scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer,
@@ -144,7 +144,7 @@ def main(config):
 if __name__ == '__main__':
     device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
     config = Config(
-        'c3d', 
+        'densenet',
         'rwf-2000',
         device=device,
         num_epoch=150,
