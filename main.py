@@ -83,7 +83,7 @@ def main(config):
 
     if not os.path.exists('{}/pth'.format(config.output)):
         os.mkdir('{}/pth'.format(config.output))
-    if not os.path.exists('{}/log'.format(config.output))
+    if not os.path.exists('{}/log'.format(config.output)):
         os.mkdir('{}/log'.format(config.output))
 
     batch_log = Log(
@@ -158,5 +158,5 @@ if __name__ == '__main__':
     config.val_batch = 16
     config.learning_rate = 1e-2
     config.num_cv = 1
-    config.output = sys.argv[1]
+    config.output = sys.argv[1t ]
     main(config)
