@@ -158,5 +158,5 @@ if __name__ == '__main__':
     config.val_batch = 16
     config.learning_rate = 1e-2
     config.num_cv = 1
-    config.output = sys.argv[1t ]
+    config.output = sys.argv[1]
     main(config)
