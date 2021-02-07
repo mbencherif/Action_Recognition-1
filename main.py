@@ -3,7 +3,7 @@ import os
 import torch
 import torch.nn as nn
 from torch.utils.data import DataLoader
-
+import sys
 from epoch import train, val, test
 from model import VioNet_C3D, VioNet_ConvLSTM, VioNet_densenet, VioNet_densenet_lean
 from dataset import VioDB
@@ -81,24 +81,25 @@ def main(config):
                             num_workers=4,
                             pin_memory=True)
 
-    if not os.path.exists('./pth'):
-        os.mkdir('./pth')
-    if not os.path.exists('./log'):
-        os.mkdir('./log')
+    if not os.path.exists('{}/pth'.format(config.output)):
+        os.mkdir('{}/pth'.format(config.output))
+    if not os.path.exists('{}/log'.format(config.output))
+        os.mkdir('{}/log'.format(config.output))
 
     batch_log = Log(
-        './log/{}_fps{}_{}_batch{}.log'.format(
+        '{}/log/{}_fps{}_{}_batch{}.log'.format(
+            config.output,
             config.model,
             sample_duration,
             dataset,
             cv,
         ), ['epoch', 'batch', 'iter', 'loss', 'acc', 'lr'])
     epoch_log = Log(
-        './log/{}_fps{}_{}_epoch{}.log'.format(config.model, sample_duration,
+        '{}/log/{}_fps{}_{}_epoch{}.log'.format(config.output, config.model, sample_duration,
                                                dataset, cv),
         ['epoch', 'loss', 'acc', 'lr'])
     val_log = Log(
-        './log/{}_fps{}_{}_val{}.log'.format(config.model, sample_duration,
+        '{}/log/{}_fps{}_{}_val{}.log'.format(config.output, config.model, sample_duration,
                                              dataset, cv),
         ['epoch', 'loss', 'acc'])
 
@@ -134,7 +135,7 @@ def main(config):
                                       val_loss < loss_baseline):
             torch.save(
                 model.state_dict(),
-                './pth/{}_fps{}_{}{}_{}_{:.4f}_{:.6f}.pth'.format(
+                '/pth/{}_fps{}_{}{}_{}_{:.4f}_{:.6f}.pth'.format(
                     config.model, sample_duration, dataset, cv, i, val_acc,
                     val_loss))
             acc_baseline = val_acc
@@ -157,4 +158,5 @@ if __name__ == '__main__':
     config.val_batch = 16
     config.learning_rate = 1e-2
     config.num_cv = 1
+    config.output = sys.argv[1]
     main(config)
