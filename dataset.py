@@ -56,12 +56,6 @@ def get_video_names_and_labels(data, subset):
 
 
 def make_dataset(root_path, annotation_path, subset, dataset_name):
-    """
-    :param root_path: xxx
-    :param annotation_path: xxx.json
-    :param subset: 'train', 'validation', 'test'
-    :return: list_of_videos, index_to_class_decode
-    """
 
     data = load_annotation_data(annotation_path)
 
@@ -80,7 +74,7 @@ def make_dataset(root_path, annotation_path, subset, dataset_name):
       for video_name, video_label in zip(video_names, video_labels):
         video_path = os.path.join(
             root_path, video_name
-        )  # $1/$2/$3
+        )
         # print('video_path:', video_path)
         if not os.path.exists(video_path):
             continue
@@ -99,7 +93,7 @@ def make_dataset(root_path, annotation_path, subset, dataset_name):
       for video_name, video_label in zip(video_names, video_labels):
           video_path = os.path.join(
               root_path, video_label, video_name
-          )  # $1/$2/$3
+          )
         #   print('video_path:', video_path)
           if not os.path.exists(video_path):
               continue
@@ -119,7 +113,7 @@ def make_dataset(root_path, annotation_path, subset, dataset_name):
     return dataset, index_to_class
 
 
-class VioDB(Dataset):
+class RWF2000(Dataset):
     def __init__(
         self,
         root_path,

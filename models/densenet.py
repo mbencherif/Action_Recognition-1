@@ -67,16 +67,6 @@ class _Transition(nn.Sequential):
 
 
 class DenseNet(nn.Module):
-    """Densenet-BC model class
-    Args:
-        growth_rate (int) - how many filters to add each layer (k in paper)
-        block_config (list of 4 ints) - how many layers in each pooling block
-        num_init_features (int) - the number of filters to learn in the first convolution layer
-        bn_size (int) - multiplicative factor for number of bottle neck layers
-          (i.e. bn_size * k features in the bottleneck layer)
-        drop_rate (float) - dropout rate after each dense layer
-        num_classes (int) - number of classification classes
-    """
 
     def __init__(self,
                  sample_size,
@@ -93,7 +83,6 @@ class DenseNet(nn.Module):
         self.sample_size = sample_size
         self.sample_duration = sample_duration
 
-        # First convolution
         self.features = nn.Sequential(
             OrderedDict([
                 ('conv0',
@@ -108,7 +97,6 @@ class DenseNet(nn.Module):
                 ('pool0', nn.MaxPool3d(kernel_size=3, stride=2, padding=1)),
             ]))
 
-        # Each denseblock
         num_features = num_init_features
         for i, num_layers in enumerate(block_config):
             block = _DenseBlock(num_layers=num_layers,
@@ -124,13 +112,10 @@ class DenseNet(nn.Module):
                 self.features.add_module('transition%d' % (i + 1), trans)
                 num_features = num_features // 2
 
-        # Final batch norm
         self.features.add_module('norm5', nn.BatchNorm3d(num_features))
 
-        # Linear layer
         self.classifier = nn.Linear(num_features, num_classes)
 
-        # Official init from torch repo.
         for m in self.modules():
             if isinstance(m, nn.Conv3d):
                 nn.init.kaiming_normal_(m.weight.data)
@@ -173,7 +158,6 @@ def get_fine_tuning_params(model, ft_begin_index):
     return model.parameters()
 
 
-# DenseNet Small
 def densenet61(**kwargs):
     model = DenseNet(num_init_features=64,
                      growth_rate=32,
@@ -182,7 +166,6 @@ def densenet61(**kwargs):
     return model
 
 
-# DenseNet Lean
 def densenet88(**kwargs):
     model = DenseNet(num_init_features=64,
                      growth_rate=32,
@@ -191,7 +174,6 @@ def densenet88(**kwargs):
     return model
 
 
-# DenseNet
 def densenet121(**kwargs):
     model = DenseNet(num_init_features=64,
                      growth_rate=32,
