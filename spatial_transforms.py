@@ -24,9 +24,6 @@ class Compose(object):
 
 
 class GroupScaleCenterCrop(object):
-    r"""
-    Crop group of imgs with the same selected scale.
-    """
 
     def __init__(self, size, scale=1.0, interpolation=Image.BILINEAR):
         if isinstance(size, int):
@@ -50,9 +47,6 @@ class GroupScaleCenterCrop(object):
 
 
 class GroupRandomScaleCenterCrop(object):
-    r"""
-    Crop group of imgs with the same randomly selected scale.
-    """
 
     def __init__(
         self, size, scales=(0.8, 0.9, 1.0), interpolation=Image.BILINEAR
@@ -81,9 +75,6 @@ class GroupRandomScaleCenterCrop(object):
 
 
 class GroupRandomHorizontalFlip(object):
-    r"""
-    Randomly horizontally flip the given groups of PIL.Image.
-    """
 
     def __call__(self, img_group):
         p = random.random()
@@ -95,37 +86,25 @@ class GroupRandomHorizontalFlip(object):
 
 class ToTensor(object):
     def __call__(self, pic):
-        # handle RGB PIL Image
         img = torch.ByteTensor(torch.ByteStorage.from_buffer(pic.tobytes()))
         img = img.view(pic.size[1], pic.size[0], len(pic.mode))
-        # put it from HWC to CHW format
-        # yikes, this transpose takes 80% of the loading time/CPU
-        # !permute internally calls transpose a number of times!
         img = img.transpose(0, 1).transpose(0, 2).contiguous()
         return img.float().div(255)
 
 
 class Normalize(object):
-    r"""
-    Perform Group Normalization on stacked imgs.
-    """
 
     def __init__(self, mean, std):
         self.mean = mean
         self.std = std
 
     def __call__(self, tensor):
-        """
-        tensor: Tensor image of size (C, H, W)
-        """
 
-        # TODO: make efficient
         for t, m, s in zip(tensor, self.mean, self.std):
             t.sub_(m).div_(s)
         return tensor
 
 
-# test code
 if __name__ == '__main__':
     trans = Compose(
         [

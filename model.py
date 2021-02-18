@@ -10,11 +10,11 @@ import os
 g_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 print(g_path)
 
-def VioNet_C3D(config):
+def C3D(config):
     device = config.device
     model = C3D(num_classes=2).to(device)
 
-    state_dict = torch.load('weights/C3D_Kinetics.pth')
+    state_dict = torch.load('weights/c3d.pth')
     # for state in state_dict.keys():
     #     print(state)
     # print("-------------------")
@@ -26,10 +26,9 @@ def VioNet_C3D(config):
     return model, params
 
 
-def VioNet_ConvLSTM(config):
+def ConvLSTM(config):
     device = config.device
     model = ConvLSTM(256, device).to(device)
-    # freeze pretrained alexnet params
     for name, param in model.named_parameters():
         if 'conv_net' in name:
             param.requires_grad = False
@@ -38,7 +37,7 @@ def VioNet_ConvLSTM(config):
     return model, params
 
 
-def VioNet_densenet(config):
+def densenet(config):
     device = config.device
     ft_begin_idx = config.ft_begin_idx
     sample_size = config.sample_size[0]
@@ -48,7 +47,7 @@ def VioNet_densenet(config):
                         sample_size=sample_size,
                         sample_duration=sample_duration).to(device)
 
-    state_dict = torch.load(g_path +'/VioNet/'+ 'weights/DenseNet_Kinetics.pth')
+    state_dict = torch.load('weights/densenet.pth')
     model.load_state_dict(state_dict)
 
     params = dn.get_fine_tuning_params(model, ft_begin_idx)
@@ -56,8 +55,7 @@ def VioNet_densenet(config):
     return model, params
 
 
-# the model we finally adopted in DenseNet
-def VioNet_densenet_lean(config):
+def densenet_lean(config):
     device = config.device
     ft_begin_idx = config.ft_begin_idx
     sample_size = config.sample_size[0]
@@ -67,7 +65,7 @@ def VioNet_densenet_lean(config):
                        sample_size=sample_size,
                        sample_duration=sample_duration).to(device)
 
-    state_dict = torch.load(g_path +'/VioNet/'+ 'weights/DenseNetLean_Kinetics.pth')
+    state_dict = torch.load('weights/densenet_lean.pth')
     model.load_state_dict(state_dict)
 
     params = dn.get_fine_tuning_params(model, ft_begin_idx)

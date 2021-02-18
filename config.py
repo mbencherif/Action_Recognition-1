@@ -19,6 +19,7 @@ class Config:
             factor=0.1,
             min_lr=1e-7,
             num_epoch=1000,
+            output =''
     ):
 
         self.model = model
@@ -56,3 +57,4 @@ class Config:
 
 
         self.num_epoch = num_epoch
+        self.output = output

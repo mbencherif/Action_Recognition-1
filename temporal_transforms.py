@@ -2,8 +2,6 @@ import random
 
 
 def crop(frames, start, size, stride):
-    # todo more efficient
-    # padding by loop
     while start + (size - 1) * stride > len(frames) - 1:
         frames *= 2
     return frames[start:start + (size - 1) * stride + 1:stride]

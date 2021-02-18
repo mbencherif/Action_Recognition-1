@@ -3,10 +3,10 @@ import os
 import torch
 import torch.nn as nn
 from torch.utils.data import DataLoader
-
+import sys
 from epoch import train, val, test
-from model import VioNet_C3D, VioNet_ConvLSTM, VioNet_densenet, VioNet_densenet_lean
-from dataset import VioDB
+from model import C3D, ConvLSTM, densenet, densenet_lean
+from dataset import RWF2000
 from config import Config
 
 from spatial_transforms import Compose, ToTensor, Normalize
@@ -21,29 +21,24 @@ print('main g_path:', g_path)
 # g_path = "."
 
 def main(config):
-    # load model
     if config.model == 'c3d':
-        model, params = VioNet_C3D(config)
+        model, params = C3D(config)
     elif config.model == 'convlstm':
-        model, params = VioNet_ConvLSTM(config)
+        model, params = ConvLSTM(config)
     elif config.model == 'densenet':
-        model, params = VioNet_densenet(config)
+        model, params = densenet(config)
     elif config.model == 'densenet_lean':
-        model, params = VioNet_densenet_lean(config)
-    # default densenet
+        model, params = densenet_lean(config)
     else:
-        model, params = VioNet_densenet_lean(config)
+        model, params = densenet_lean(config)
 
-    # dataset
     dataset = config.dataset
     sample_size = config.sample_size
     stride = config.stride
     sample_duration = config.sample_duration
 
-    # cross validation phase
     cv = config.num_cv
 
-    # train set
     crop_method = GroupRandomScaleCenterCrop(size=sample_size)
     norm = Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
     spatial_transform = Compose(
@@ -63,7 +58,6 @@ def main(config):
                               num_workers=4,
                               pin_memory=True)
 
-    # val set
     crop_method = GroupScaleCenterCrop(size=sample_size)
     norm = Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
     spatial_transform = Compose([crop_method, ToTensor(), norm])
@@ -72,7 +66,7 @@ def main(config):
 
     val_batch = config.val_batch
 
-    val_data = VioDB(g_path + '/RWF_2000/frames/',
+    val_data = RWF2000(g_path + '/RWF_2000/frames/',
                      g_path + '/RWF-2000.json', 'validation',
                      spatial_transform, temporal_transform, target_transform, dataset)
     val_loader = DataLoader(val_data,
@@ -81,24 +75,25 @@ def main(config):
                             num_workers=4,
                             pin_memory=True)
 
-    if not os.path.exists('./pth'):
-        os.mkdir('./pth')
-    if not os.path.exists('./log'):
-        os.mkdir('./log')
+    if not os.path.exists('{}/pth'.format(config.output)):
+        os.mkdir('{}/pth'.format(config.output))
+    if not os.path.exists('{}/log'.format(config.output)):
+        os.mkdir('{}/log'.format(config.output))
 
     batch_log = Log(
-        './log/{}_fps{}_{}_batch{}.log'.format(
+        '{}/log/{}_fps{}_{}_batch{}.log'.format(
+            config.output,
             config.model,
             sample_duration,
             dataset,
             cv,
         ), ['epoch', 'batch', 'iter', 'loss', 'acc', 'lr'])
     epoch_log = Log(
-        './log/{}_fps{}_{}_epoch{}.log'.format(config.model, sample_duration,
+        '{}/log/{}_fps{}_{}_epoch{}.log'.format(config.output, config.model, sample_duration,
                                                dataset, cv),
         ['epoch', 'loss', 'acc', 'lr'])
     val_log = Log(
-        './log/{}_fps{}_{}_val{}.log'.format(config.model, sample_duration,
+        '{}/log/{}_fps{}_{}_val{}.log'.format(config.output, config.model, sample_duration,
                                              dataset, cv),
         ['epoch', 'loss', 'acc'])
 
@@ -109,12 +104,12 @@ def main(config):
     momentum = config.momentum
     weight_decay = config.weight_decay
 
-    # optimizer = torch.optim.SGD(params=params,
-    #                             lr=learning_rate,
-    #                             momentum=momentum,
-    #                             weight_decay=weight_decay)
-    
-    optimizer = torch.optim.Adam(params=params, lr = learning_rate, weight_decay= weight_decay)
+    optimizer = torch.optim.SGD(params=params,
+                                lr=learning_rate,
+                                momentum=momentum,
+                                weight_decay=weight_decay)
+
+    # optimizer = torch.optim.Adam(params=params, lr = learning_rate, weight_decay= weight_decay)
 
     scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer,
                                                            verbose=True,
@@ -134,8 +129,8 @@ def main(config):
                                       val_loss < loss_baseline):
             torch.save(
                 model.state_dict(),
-                './pth/{}_fps{}_{}{}_{}_{:.4f}_{:.6f}.pth'.format(
-                    config.model, sample_duration, dataset, cv, i, val_acc,
+                '{}/pth/{}_fps{}_{}{}_{}_{:.4f}_{:.6f}.pth'.format(
+                    config.output, config.model, sample_duration, dataset, cv, i, val_acc,
                     val_loss))
             acc_baseline = val_acc
             loss_baseline = val_loss
@@ -144,11 +139,15 @@ def main(config):
 if __name__ == '__main__':
     device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
     config = Config(
+<<<<<<< HEAD
         'convlstm', 
+=======
+        'densenet_lean',
+>>>>>>> 1b89a5f7c8291d93f68a8043c3aac212bb177c3e
         'rwf-2000',
         device=device,
         num_epoch=150,
-        acc_baseline=0.92,
+        acc_baseline=0.80,
         ft_begin_idx=0,
     )
 
@@ -157,4 +156,5 @@ if __name__ == '__main__':
     config.val_batch = 16
     config.learning_rate = 1e-2
     config.num_cv = 1
+    config.output = sys.argv[1]
     main(config)
