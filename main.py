@@ -49,7 +49,7 @@ def main(config):
     target_transform = Label()
 
     train_batch = config.train_batch
-    train_data = VioDB(g_path + '/RWF_2000/frames/',
+    train_data = RWF2000(g_path + '/RWF_2000/frames/',
                        g_path + '/RWF-2000.json', 'training',
                        spatial_transform, temporal_transform, target_transform, dataset)
     train_loader = DataLoader(train_data,
