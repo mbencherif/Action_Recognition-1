@@ -56,7 +56,7 @@ def main(config):
                               batch_size=train_batch,
                               shuffle=True,
                               num_workers=4,
-                              pin_memory=True)
+                              pin_memory=False)
 
     crop_method = GroupScaleCenterCrop(size=sample_size)
     norm = Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
@@ -73,7 +73,7 @@ def main(config):
                             batch_size=val_batch,
                             shuffle=False,
                             num_workers=4,
-                            pin_memory=True)
+                            pin_memory=False)
 
     if not os.path.exists('{}/pth'.format(config.output)):
         os.mkdir('{}/pth'.format(config.output))
