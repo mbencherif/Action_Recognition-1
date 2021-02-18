@@ -25,7 +25,7 @@ def video_loader(video_dir_path, frame_indices):
 
 def n_frames_loader(file_path):
     with open(file_path, 'r') as input_file:
-        return float(input_file.read().rstrip('\n\r'))
+        return float(input_file.read().split("\n")[0])
 
 
 def load_annotation_data(data_file_path):
