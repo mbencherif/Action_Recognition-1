@@ -140,7 +140,7 @@ if __name__ == '__main__':
     device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
     config = Config(
 <<<<<<< HEAD
-        'c3d', 
+        'densenet_lean', 
 =======
         'densenet_lean',
 >>>>>>> 1b89a5f7c8291d93f68a8043c3aac212bb177c3e
