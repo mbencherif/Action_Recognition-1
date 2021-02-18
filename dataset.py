@@ -27,7 +27,7 @@ def n_frames_loader(file_path):
     with open(file_path, 'r') as input_file:
         n = input_file.read().rstrip("\n\r")
         try:
-            return float(input_file.read().split("\n")[0])
+            return int(input_file.read().rstrip("\n\r"))
         except:
             print(n)
             print(file_path)
