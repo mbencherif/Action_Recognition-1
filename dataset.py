@@ -31,6 +31,7 @@ def n_frames_loader(file_path):
         except:
             print(type(n))
             print(file_path)
+            return int(n)
 
 
 def load_annotation_data(data_file_path):
