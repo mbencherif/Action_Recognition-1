@@ -10,6 +10,8 @@ import os
 g_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 print(g_path)
 
+__all__ = [C3D, ConvLSTM, Densenet, Densenet_lean]
+
 def C3D(config):
     device = config.device
     model = C3D(num_classes=2).to(device)
@@ -37,7 +39,7 @@ def ConvLSTM(config):
     return model, params
 
 
-def densenet(config):
+def Densenet(config):
     device = config.device
     ft_begin_idx = config.ft_begin_idx
     sample_size = config.sample_size[0]
@@ -55,7 +57,7 @@ def densenet(config):
     return model, params
 
 
-def densenet_lean(config):
+def Densenet_lean(config):
     device = config.device
     ft_begin_idx = config.ft_begin_idx
     sample_size = config.sample_size[0]

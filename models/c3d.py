@@ -84,3 +84,7 @@ class C3D(nn.Module):
         out = self.soft(out)
 
         return out
+    
+    
+
+
