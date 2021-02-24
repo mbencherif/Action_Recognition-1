@@ -1,1 +1,0 @@
-!python api --CHECKPOINT weights/densenet_lean.pth --TEST_TYPE 3 --PATH $S1
