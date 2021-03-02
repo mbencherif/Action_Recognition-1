@@ -12,7 +12,7 @@ from target_transforms import Label, Video
 import torch
 import torch.nn as nn
 from torch.utils.data import DataLoader
-
+import numpy as np
 
 g_path = os.path.dirname(os.path.abspath(__file__))
 crop_method = GroupRandomScaleCenterCrop(size=(224, 224))
@@ -44,6 +44,7 @@ def val(data_loader, model, criterion):
     for _, (inputs, targets) in enumerate(data_loader):
         inputs = inputs.to('cuda')
         targets = targets.to('cuda')
+        print(np.shape(inputs))
         # targets_onehot = torch.nn.functional.one_hot(targets, num_classes = 2).type(torch.FloatTensor)
         # targets_onehot = targets_onehot.to(device)
         # no need to track grad in eval mode
