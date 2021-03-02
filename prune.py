@@ -56,12 +56,11 @@ def val(data_loader, model, criterion):
         accuracies.update(acc, inputs.size(0))
 
     print(
-        'Epoch: [{}]\t'
         'Loss(val): {loss.avg:.4f}\t'
-        'Acc(val): {acc.avg:.3f}'.format(epoch, loss=losses, acc=accuracies)
+        'Acc(val): {acc.avg:.3f}'.format(loss=losses, acc=accuracies)
     )
 
-    print(f'loss: {losses.avg}, acc: {accuracies.avg}')
+    # print(f'loss: {losses.avg}, acc: {accuracies.avg}')
 
     return losses.avg, accuracies.avg
 
@@ -112,7 +111,7 @@ def prune_model(model, amount = 0.2, method = 'random_unstructured', type_param 
 
 if __name__ == '__main__':
     LIST_METHOD_PRUNE = ['random_unstructured', 'l1_unstructured', 'random_structured', 'ln_structured']
-    model = load_model('cpu')
+    model = load_model('cuda')
     prune_model(model, method = LIST_METHOD_PRUNE[3])
     print(sparsity(model))
     eval(model)
