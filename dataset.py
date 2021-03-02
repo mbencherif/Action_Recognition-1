@@ -29,8 +29,8 @@ def n_frames_loader(file_path):
         try:
             return int(input_file.read().rstrip("\n\r"))
         except:
-            print(type(n))
-            print(file_path)
+            # print(type(n))
+            # print(file_path)
             return int(n)
 
 
