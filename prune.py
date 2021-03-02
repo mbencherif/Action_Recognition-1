@@ -15,6 +15,15 @@ from torch.utils.data import DataLoader
 
 
 g_path = os.path.dirname(os.path.abspath(__file__))
+crop_method = GroupRandomScaleCenterCrop(size=(224, 224))
+norm = Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
+spatial_transform = Compose(
+    [crop_method,
+        GroupRandomHorizontalFlip(),
+        ToTensor(), norm])
+temporal_transform = RandomCrop(size=16, stride=1)
+target_transform = Label()
+
 
 def load_model(device):
     model = densenet88(num_classes=2,
