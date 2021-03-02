@@ -24,7 +24,7 @@ def load_model(device):
                        sample_size=16,
                        sample_duration=224)
 
-    state_dict = torch.load('weights/densenet_lean.pth')
+    state_dict = torch.load('/content/drive/MyDrive/RWF/pth/densenet_lean_fps16_rwf-20001_3_0.8450_0.366975.pth')
     model.load_state_dict(state_dict)
     model.to(device)
     return model
@@ -48,7 +48,7 @@ def val(data_loader, model, criterion):
     for _, (inputs, targets) in enumerate(data_loader):
         inputs = inputs.to('cuda')
         targets = targets.to('cuda')
-        print(np.shape(inputs))
+        # print(np.shape(inputs))
         # targets_onehot = torch.nn.functional.one_hot(targets, num_classes = 2).type(torch.FloatTensor)
         # targets_onehot = targets_onehot.to(device)
         # no need to track grad in eval mode
@@ -81,7 +81,7 @@ def eval(model):
     val_data = RWF2000('/content/RWF_2000/frames/',
                      '/content/Action_Recognition' + '/RWF-2000.json', 'validation',
                      spatial_transform, temporal_transform, target_transform, 'rwf-2000')
-    print(len(val_data))
+    # print(len(val_data))
     val_loader = DataLoader(val_data,
                             batch_size=16,
                             shuffle=False,
@@ -125,8 +125,8 @@ def prune_model(model, amount = 0.2, method = 'random_unstructured', type_param 
 if __name__ == '__main__':
     LIST_METHOD_PRUNE = ['random_unstructured', 'l1_unstructured', 'random_structured', 'ln_structured']
     model = load_model('cuda')
-    # prune_model(model, method = LIST_METHOD_PRUNE[0])
-    # print(sparsity(model))
+    prune_model(model, method = LIST_METHOD_PRUNE[0])
+    print(sparsity(model))
     eval(model)
             
 
