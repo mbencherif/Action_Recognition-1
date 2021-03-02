@@ -61,7 +61,7 @@ def val(data_loader, model, criterion):
         'Acc(val): {acc.avg:.3f}'.format(epoch, loss=losses, acc=accuracies)
     )
 
-    val_log.log({'epoch': epoch, 'loss': losses.avg, 'acc': accuracies.avg})
+    print(f'loss: {losses.avg}, acc: {accuracies.avg}')
 
     return losses.avg, accuracies.avg
 
