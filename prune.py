@@ -16,14 +16,7 @@ import numpy as np
 
 g_path = os.path.dirname(os.path.abspath(__file__))
 print(g_path)
-crop_method = GroupRandomScaleCenterCrop(size=(224, 224))
-norm = Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
-spatial_transform = Compose(
-    [crop_method,
-        GroupRandomHorizontalFlip(),
-        ToTensor(), norm])
-temporal_transform = RandomCrop(size=16, stride=1)
-target_transform = Label()
+
 
 
 def load_model(device):
@@ -67,9 +60,16 @@ def val(data_loader, model, criterion):
     return losses.avg, accuracies.avg
 
 def eval(model):
-    
+    crop_method = GroupRandomScaleCenterCrop(size=(224, 224))
+    norm = Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
+    spatial_transform = Compose(
+        [crop_method,
+            GroupRandomHorizontalFlip(),
+            ToTensor(), norm])
+    temporal_transform = RandomCrop(size=16, stride=1)
+    target_transform = Label()
     val_data = RWF2000('/content/RWF_2000/frames/',
-                     g_path + '/RWF-2000.json', 'validation',
+                     '/content/Action_Recognition' + '/RWF-2000.json', 'validation',
                      spatial_transform, temporal_transform, target_transform, 'RWF-2000')
     print(len(val_data))
     val_loader = DataLoader(val_data,
