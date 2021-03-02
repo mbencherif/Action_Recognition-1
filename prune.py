@@ -111,9 +111,9 @@ def prune_model(model, amount = 0.2, method = 'random_unstructured', type_param 
 
 if __name__ == '__main__':
     LIST_METHOD_PRUNE = ['random_unstructured', 'l1_unstructured', 'random_structured', 'ln_structured']
-    model = load_model('cuda')
-    prune_model(model, method = LIST_METHOD_PRUNE[0])
-    print(sparsity(model))
+    # model = load_model('cuda')
+    # prune_model(model, method = LIST_METHOD_PRUNE[0])
+    # print(sparsity(model))
     eval(model)
             
 
