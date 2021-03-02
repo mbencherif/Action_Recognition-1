@@ -4,7 +4,7 @@ from models.densenet import densenet88, densenet121
 from dataset import RWF2000
 import torch
 from utils import AverageMeter
-
+g_path = os.path.dirname(os.path.abspath(__file__))
 
 def load_model(device):
     model = densenet88(num_classes=2,
