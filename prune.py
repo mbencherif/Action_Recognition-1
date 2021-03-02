@@ -15,6 +15,7 @@ from torch.utils.data import DataLoader
 import numpy as np
 
 g_path = os.path.dirname(os.path.abspath(__file__))
+print(g_path)
 crop_method = GroupRandomScaleCenterCrop(size=(224, 224))
 norm = Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
 spatial_transform = Compose(
