@@ -70,10 +70,10 @@ def eval(model):
     target_transform = Label()
     val_data = RWF2000('/content/RWF_2000/frames/',
                      '/content/Action_Recognition' + '/RWF-2000.json', 'validation',
-                     spatial_transform, temporal_transform, target_transform, 'RWF-2000')
+                     spatial_transform, temporal_transform, target_transform, 'rwf-2000')
     print(len(val_data))
     val_loader = DataLoader(val_data,
-                            batch_size=32,
+                            batch_size=16,
                             shuffle=False,
                             num_workers=4,
                             pin_memory=True)
