@@ -69,7 +69,7 @@ def eval(model):
     
     val_data = RWF2000('/content/RWF_2000/frames/',
                      g_path + '/RWF-2000.json', 'validation',
-                     spatial_transform, temporal_transform, target_transform, dataset)
+                     spatial_transform, temporal_transform, target_transform, 'RWF-2000')
     val_loader = DataLoader(val_data,
                             batch_size=32,
                             shuffle=False,
