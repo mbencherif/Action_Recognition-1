@@ -42,8 +42,8 @@ def val(data_loader, model, criterion):
     accuracies = AverageMeter()
 
     for _, (inputs, targets) in enumerate(data_loader):
-        inputs = inputs
-        targets = targets
+        inputs = inputs.to('cuda')
+        targets = targets.to('cuda')
         # targets_onehot = torch.nn.functional.one_hot(targets, num_classes = 2).type(torch.FloatTensor)
         # targets_onehot = targets_onehot.to(device)
         # no need to track grad in eval mode
@@ -76,8 +76,8 @@ def eval(model):
                             pin_memory=True)
     criterion = nn.CrossEntropyLoss()
     val_loss, val_acc = val(val_loader, model, criterion)
-    print(val_loss)
-    print(val_acc)
+    # print(val_loss)
+    # print(val_acc)
     
 def sparsity(model):
     # Return global model sparsity
@@ -112,7 +112,7 @@ def prune_model(model, amount = 0.2, method = 'random_unstructured', type_param 
 if __name__ == '__main__':
     LIST_METHOD_PRUNE = ['random_unstructured', 'l1_unstructured', 'random_structured', 'ln_structured']
     model = load_model('cuda')
-    prune_model(model, method = LIST_METHOD_PRUNE[3])
+    prune_model(model, method = LIST_METHOD_PRUNE[0])
     print(sparsity(model))
     eval(model)
             
