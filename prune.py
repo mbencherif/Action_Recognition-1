@@ -13,6 +13,8 @@ import torch
 import torch.nn as nn
 from torch.utils.data import DataLoader
 import numpy as np
+import torch_pruning as tp
+
 
 g_path = os.path.dirname(os.path.abspath(__file__))
 print(g_path)
@@ -108,26 +110,32 @@ def check_type(method):
     return 0
 
 
-def prune_model(model, amount = 0.2, method = 'random_unstructured', type_param = 'weight'):
-    for name, m in model.named_modules():
-        if isinstance(m, torch.nn.Conv3d):
-            if check_type(method) == 1:
-                getattr(prune, method)(m, name = type_param, amount = amount)
-            elif check_type(method) == -1:
-                getattr(prune, method)(m, name = type_param, amount = amount, dim = 3, n = 2)
-            else:
-                getattr(prune, method)(m, name = type_param, amount = amount, dim = 3)
-            prune.remove(m, name = type_param)
+def prune_model(model, prune_prob = 0.1):
+    model.cpu()
+    DG = tp.DependencyGraph().build_dependency( model, torch.randn(1, 3, 32, 32) )
+    def prune_conv(conv, amount=0.2):
+        strategy = tp.strategy.L1Strategy()
+        pruning_index = strategy(conv.weight, amount=amount)
+        plan = DG.get_pruning_plan(conv, tp.prune_conv, pruning_index)
+        plan.exec()
+    
+    for _, m in model.named_modules():
+        if isinstance(m, torch.nn.Conv2d):
+            prune_conv(m, prune_prob)
     return model
     
 
 
 if __name__ == '__main__':
     LIST_METHOD_PRUNE = ['random_unstructured', 'l1_unstructured', 'random_structured', 'ln_structured']
-    model = load_model('cuda')
-    prune_model(model, method = LIST_METHOD_PRUNE[0])
-    print(sparsity(model))
-    eval(model)
+    amounts = [i * 0.05 for i in range(0, 18)]
+    for methd in LIST_METHOD_PRUNE:
+        print("Method: ", method)
+        for amount in amounts:   
+            model = load_model('cuda')
+            prune_model(model, method = method, amount = amount)
+            print(sparsity(model))
+            eval(model)
             
 
 

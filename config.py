@@ -6,7 +6,7 @@ class Config:
             dataset,
             device,
             num_cv='',
-            sample_duration=16,
+            sample_duration=32,
             stride=1,
             sample_size=(224, 224),
             ft_begin_idx=3,
@@ -19,7 +19,8 @@ class Config:
             factor=0.1,
             min_lr=1e-7,
             num_epoch=1000,
-            output =''
+            output ='',
+            num_prune = 5
     ):
 
         self.model = model
@@ -58,3 +59,5 @@ class Config:
 
         self.num_epoch = num_epoch
         self.output = output
+
+        self.num_prune = num_prune

@@ -15,12 +15,27 @@ from temporal_transforms import CenterCrop, RandomCrop
 from target_transforms import Label, Video
 
 from utils import Log
-
+from prun import prune_model
 g_path = os.path.dirname(os.path.abspath(__file__))
+import torch_pruning as tp
 print('main g_path:', g_path)
 # g_path = "."
 
-def main(config):
+def prune_model(model, prune_prob = 0.1):
+    model.cpu()
+    DG = tp.DependencyGraph().build_dependency(model, torch.randn(1, 3, 32, 224, 224))
+    def prune_conv(conv, amount=0.2):
+        strategy = tp.strategy.L1Strategy()
+        pruning_index = strategy(conv.weight, amount=amount)
+        plan = DG.get_pruning_plan(conv, tp.prune_conv, pruning_index)
+        plan.exec()
+    
+    for _, m in model.named_modules():
+        if isinstance(m, torch.nn.Conv2d):
+            prune_conv(m, prune_prob)
+    return model
+
+def main(config, method = l1_unstructured', amount = 0.2, type_param = 'weight'):
     if config.model == 'c3d':
         model, params = C3D(config)
     elif config.model == 'convlstm':
@@ -118,22 +133,24 @@ def main(config):
 
     acc_baseline = config.acc_baseline
     loss_baseline = 1
-
-    for i in range(config.num_epoch):
-        train(i, train_loader, model, criterion, optimizer, device, batch_log,
-              epoch_log)
-        val_loss, val_acc = val(i, val_loader, model, criterion, device,
-                                val_log)
-        scheduler.step(val_loss)
-        if val_acc > acc_baseline or (val_acc >= acc_baseline and
-                                      val_loss < loss_baseline):
-            torch.save(
-                model.state_dict(),
-                '{}/pth/{}_fps{}_{}{}_{}_{:.4f}_{:.6f}.pth'.format(
-                    config.output, config.model, sample_duration, dataset, cv, i, val_acc,
-                    val_loss))
-            acc_baseline = val_acc
-            loss_baseline = val_loss
+    
+    for p in range(config.num_prune):
+        prune_model(model)
+        for i in range(config.num_epoch):
+            train(i, train_loader, model, criterion, optimizer, device, batch_log,
+                  epoch_log)
+            val_loss, val_acc = val(i, val_loader, model, criterion, device,
+                                    val_log)
+            scheduler.step(val_loss)
+            if val_acc > acc_baseline or (val_acc >= acc_baseline and
+                                        val_loss < loss_baseline):
+                torch.save(
+                    model.state_dict(),
+                    '{}/pth/prune_{}_{}_fps{}_{}{}_{}_{:.4f}_{:.6f}.pth'.format(
+                        p, config.output, config.model, sample_duration, dataset, cv, i, val_acc,
+                        val_loss))
+                acc_baseline = val_acc
+                loss_baseline = val_loss
 
 
 if __name__ == '__main__':
@@ -142,14 +159,14 @@ if __name__ == '__main__':
         'densenet_lean', 
         'rwf-2000',
         device=device,
-        num_epoch=150,
-        acc_baseline=0.80,
+        num_epoch=10,
+        acc_baseline=0.0,
         ft_begin_idx=0,
     )
 
     config.dataset = 'rwf-2000'
-    config.train_batch = 16
-    config.val_batch = 16
+    config.train_batch = 8
+    config.val_batch = 8
     config.learning_rate = 1e-2
     config.num_cv = 1
     config.output = sys.argv[1]
