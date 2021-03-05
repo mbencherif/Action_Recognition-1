@@ -136,7 +136,11 @@ def main(config):
     loss_baseline = 1
     
     for p in range(config.num_prune):
+        print(f"Prune {p}/{config.num_prune}")
+        params = sum([np.prod(p.size()) for p in model.parameters()])
+        print("Number of Parameters: %.1fM"%(params/1e6))
         prune_model(model)
+        model.to(config.device)
         for i in range(config.num_epoch):
             train(i, train_loader, model, criterion, optimizer, device, batch_log,
                   epoch_log)
