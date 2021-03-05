@@ -146,7 +146,7 @@ def main(config):
         params = sum([np.prod(p.size()) for p in model.parameters()])
         print("Number of Parameters: %.1fM"%(params/1e6))
         model.to(config.device)
-        for i in range(1):
+        for i in range(5):
             train(i, train_loader, model, criterion, optimizer, device, batch_log,
                   epoch_log)
             val_loss, val_acc = val(i, val_loader, model, criterion, device,
