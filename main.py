@@ -31,7 +31,7 @@ def prune_model(model, prune_prob = 0.1):
         plan.exec()
     
     for _, m in model.named_modules():
-        if isinstance(m, torch.nn.Conv2d):
+        if isinstance(m, torch.nn.Conv3d):
             prune_conv(m, prune_prob)
     return model
 
