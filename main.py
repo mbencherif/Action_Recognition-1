@@ -15,7 +15,6 @@ from temporal_transforms import CenterCrop, RandomCrop
 from target_transforms import Label, Video
 
 from utils import Log
-from prun import prune_model
 g_path = os.path.dirname(os.path.abspath(__file__))
 import torch_pruning as tp
 print('main g_path:', g_path)
