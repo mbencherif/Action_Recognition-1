@@ -46,9 +46,7 @@ def main(config):
     else:
         model, params = densenet_lean(config)
     
-    state_dict = torch.load('/content/drive/MyDrive/RWF/pth/densenet_lean_fps32_rwf-20001_95_0.8375_0.469553.pth')
-    model.load_state_dict(state_dict)
-    model.to(config.devide)
+    
 
     dataset = config.dataset
     sample_size = config.sample_size
