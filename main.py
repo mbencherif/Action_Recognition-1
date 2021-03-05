@@ -35,7 +35,7 @@ def prune_model(model, prune_prob = 0.1):
             prune_conv(m, prune_prob)
     return model
 
-def main(config, method = l1_unstructured', amount = 0.2, type_param = 'weight'):
+def main(config):
     if config.model == 'c3d':
         model, params = C3D(config)
     elif config.model == 'convlstm':
@@ -46,6 +46,10 @@ def main(config, method = l1_unstructured', amount = 0.2, type_param = 'weight')
         model, params = densenet_lean(config)
     else:
         model, params = densenet_lean(config)
+    
+    state_dict = torch.load('/content/drive/MyDrive/RWF/pth/densenet_lean_fps32_rwf-20001_95_0.8375_0.469553.pth')
+    model.load_state_dict(state_dict)
+    model.to(config.devide)
 
     dataset = config.dataset
     sample_size = config.sample_size
