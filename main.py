@@ -143,6 +143,8 @@ def main(config):
         params = sum([np.prod(p.size()) for p in model.parameters()])
         print("Number of Parameters: %.1fM"%(params/1e6))
         model = prune_model(model)
+        params = sum([np.prod(p.size()) for p in model.parameters()])
+        print("Number of Parameters: %.1fM"%(params/1e6))
         model.to(config.device)
         for i in range(1):
             train(i, train_loader, model, criterion, optimizer, device, batch_log,
