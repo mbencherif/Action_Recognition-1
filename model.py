@@ -65,8 +65,8 @@ def densenet_lean(config):
                        sample_size=sample_size,
                        sample_duration=sample_duration).to(device)
 
-    state_dict = torch.load('weights/densenet_lean.pth')
-    model.load_state_dict(state_dict)
+    # state_dict = torch.load('weights/densenet_lean.pth')
+    # model.load_state_dict(state_dict)
 
     params = dn.get_fine_tuning_params(model, ft_begin_idx)
 
