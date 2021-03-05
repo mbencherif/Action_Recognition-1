@@ -137,12 +137,14 @@ def main(config):
     loss_baseline = 1
     
     for p in range(config.num_prune):
+        if p > 0:
+            model = torch.load('{}/pth/prune_{}.pth'.format(config.output, p - 1))
         print(f"Prune {p}/{config.num_prune}")
         params = sum([np.prod(p.size()) for p in model.parameters()])
         print("Number of Parameters: %.1fM"%(params/1e6))
-        prune_model(model)
+        model = prune_model(model)
         model.to(config.device)
-        for i in range(config.num_epoch):
+        for i in range(1):
             train(i, train_loader, model, criterion, optimizer, device, batch_log,
                   epoch_log)
             val_loss, val_acc = val(i, val_loader, model, criterion, device,
@@ -150,11 +152,12 @@ def main(config):
             scheduler.step(val_loss)
             if val_acc > acc_baseline or (val_acc >= acc_baseline and
                                         val_loss < loss_baseline):
-                torch.save(
-                    model.state_dict(),
-                    '{}/pth/prune_{}_{}_fps{}_{}{}_{}_{:.4f}_{:.6f}.pth'.format(
-                        config.output, p, config.model, sample_duration, dataset, cv, i, val_acc,
-                        val_loss))
+                # torch.save(
+                    # model.state_dict(),
+                    # '{}/pth/prune_{}_{}_fps{}_{}{}_{}_{:.4f}_{:.6f}.pth'.format(
+                    #     config.output, p, config.model, sample_duration, dataset, cv, i, val_acc,
+                    #     val_loss))
+                torch.save(model, '{}/pth/prune_{}.pth'.format(config.output, p))
                 acc_baseline = val_acc
                 loss_baseline = val_loss
 
