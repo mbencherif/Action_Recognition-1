@@ -136,7 +136,7 @@ def main(config):
     acc_baseline = config.acc_baseline
     loss_baseline = 1
     
-    for p in range(config.num_prune):
+    for p in range(1, config.num_prune):
         if p > 0:
             model = torch.load('{}/pth/prune_{}.pth'.format(config.output, p - 1))
         print(f"Prune {p}/{config.num_prune}")
@@ -146,6 +146,7 @@ def main(config):
         params = sum([np.prod(p.size()) for p in model.parameters()])
         print("Number of Parameters: %.1fM"%(params/1e6))
         model.to(config.device)
+        acc_baseline = 0
         for i in range(5):
             train(i, train_loader, model, criterion, optimizer, device, batch_log,
                   epoch_log)
@@ -160,8 +161,8 @@ def main(config):
                     #     config.output, p, config.model, sample_duration, dataset, cv, i, val_acc,
                     #     val_loss))
                 torch.save(model, '{}/pth/prune_{}.pth'.format(config.output, p))
-                acc_baseline = val_acc
-                loss_baseline = val_loss
+                # acc_baseline = val_acc
+                # loss_baseline = val_loss
 
 
 if __name__ == '__main__':
