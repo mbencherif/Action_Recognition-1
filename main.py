@@ -153,7 +153,7 @@ def main(config):
                 torch.save(
                     model.state_dict(),
                     '{}/pth/prune_{}_{}_fps{}_{}{}_{}_{:.4f}_{:.6f}.pth'.format(
-                        p, config.output, config.model, sample_duration, dataset, cv, i, val_acc,
+                        config.output, p, config.model, sample_duration, dataset, cv, i, val_acc,
                         val_loss))
                 acc_baseline = val_acc
                 loss_baseline = val_loss
