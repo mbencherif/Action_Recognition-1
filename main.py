@@ -18,6 +18,7 @@ from utils import Log
 g_path = os.path.dirname(os.path.abspath(__file__))
 import torch_pruning as tp
 print('main g_path:', g_path)
+import numpy as np
 # g_path = "."
 
 def prune_model(model, prune_prob = 0.1):
