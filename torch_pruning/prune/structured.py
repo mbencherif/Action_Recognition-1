@@ -84,7 +84,6 @@ class RelatedConvPruning(BasePruningFunction):
             layer.weight = torch.nn.Parameter(layer.weight.data.clone()[:, keep_idxs]) 
         else:
             layer.weight = torch.nn.Parameter(layer.weight.data.clone()[keep_idxs])
-        # no bias pruning because it does not change the output size
         return layer
     
     @staticmethod

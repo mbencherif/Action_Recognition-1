@@ -80,7 +80,7 @@ def _get_node_in_channel(node):
     else:
         return None
 
-# Dummy Pruning fn
+
 def _prune_concat(layer, *args, **kargs):
     return layer, 0
 
@@ -97,7 +97,6 @@ class _CustomizedOp(nn.Module):
     def __repr__(self):
         return "CustomizedOp(%s)"%(str(self.op_cls))
 
-# Dummy module
 class _ConcatOp(nn.Module):
     def __init__(self):
         super(_ConcatOp, self).__init__()
@@ -207,13 +206,6 @@ class Node(object):
 
 class Dependency(object):
     def __init__(self, trigger, handler, broken_node: Node, index_transform: typing.Callable=None):
-        """ Layer dependency in structed neural network pruning. 
-
-        Parameters:
-            trigger (Callable or None): a pruning function which will break the dependency 
-            handler (Callable): a pruning function to fix the broken dependency
-            broken_node (nn.Module): the broken layer
-        """
         self.trigger = trigger
         self.handler = handler
         self.broken_node = broken_node
@@ -238,12 +230,7 @@ class Dependency(object):
                         self.broken_node == other.broken_node)
 
 class PruningPlan(object):
-    """ Pruning plan.
-    
-    Args:
-        dry_run (Callable or None): only return the info about pruning.
-        module_to_name (dict): mapping nn.module to a readable name. It will be filled by DependencyGraph.
-    """
+
 
     def __init__(self):
         self._plans = list()
@@ -298,7 +285,7 @@ class DependencyGraph(object):
 
     PRUNABLE_MODULES = [ nn.modules.conv._ConvNd, nn.modules.batchnorm._BatchNorm, nn.Linear, nn.PReLU ]
     
-    HANDLER = {    # pruning function that changes 1. in_channel           2. out_channel
+    HANDLER = {    
                 OPTYPE.CONV                 :  (prune.prune_related_conv,   prune.prune_conv),
                 OPTYPE.BN                   :  (prune.prune_batchnorm,      prune.prune_batchnorm),
                 OPTYPE.PRELU                :  (prune.prune_prelu,          prune.prune_prelu),
@@ -307,21 +294,19 @@ class DependencyGraph(object):
                 OPTYPE.CONCAT               :  (_prune_concat,              _prune_concat),
                 OPTYPE.SPLIT                :  (_prune_split,               _prune_split),
                 OPTYPE.ELEMENTWISE          :  (_prune_elementwise_op,      _prune_elementwise_op),
-                OPTYPE.CUSTOMIZED           :  (None, None), # placeholder
+                OPTYPE.CUSTOMIZED           :  (None, None),
             }
     OUTPUT_NODE_RULES = {}
     INPUT_NODE_RULES = {}
     for t1 in HANDLER.keys():
         for t2 in HANDLER.keys():
-            OUTPUT_NODE_RULES[ (t1, t2) ] = (HANDLER[t1][1], HANDLER[t2][0]) # change in_channels of output layer
-            INPUT_NODE_RULES[ (t1, t2) ] = (HANDLER[t1][0], HANDLER[t2][1])  # change out_channels of input layer
+            OUTPUT_NODE_RULES[ (t1, t2) ] = (HANDLER[t1][1], HANDLER[t2][0])  
+            INPUT_NODE_RULES[ (t1, t2) ] = (HANDLER[t1][0], HANDLER[t2][1])  
     CUSTOMIZED_OP_FN = {}
 
     def build_dependency( self, model:torch.nn.Module, example_inputs:torch.Tensor, output_transform:callable=None, verbose:bool=True ):
         self.verbose = verbose
-        # get module name
         self._module_to_name = { module: name for (name, module) in model.named_modules() }
-        # build dependency graph
         self.module_to_node = self._obtain_forward_graph( model, example_inputs, output_transform=output_transform )
         self._build_dependency(self.module_to_node)
         self.update_index()
@@ -351,7 +336,6 @@ class DependencyGraph(object):
             
         self.update_index()
         plan = PruningPlan()
-        #  the user pruning operation
         root_node = self.module_to_node[module]
         plan.add_plan(Dependency(pruning_fn, pruning_fn, root_node), idxs)
         
@@ -359,7 +343,7 @@ class DependencyGraph(object):
         def _fix_denpendency_graph(node, fn, indices):
             visited.add( node )
             for dep in node.dependencies:
-                if dep.is_triggered_by(fn): #and dep.broken_node not in visited:
+                if dep.is_triggered_by(fn): 
                     if dep.index_transform is not None:
                         new_indices = dep.index_transform(indices)
                     else:
@@ -374,7 +358,6 @@ class DependencyGraph(object):
                         _fix_denpendency_graph(dep.broken_node, dep.handler, new_indices)
         _fix_denpendency_graph(root_node, pruning_fn, idxs)
 
-        # merge pruning ops
         merged_plan = PruningPlan()
         for dep, idxs in plan.plan:
             merged_plan.add_plan_and_merge( dep, idxs )
@@ -409,7 +392,6 @@ class DependencyGraph(object):
     def _obtain_forward_graph(self, model, example_inputs, output_transform):
         #module_to_node = { m: Node( m ) for m in model.modules() if isinstance( m, self.PRUNABLE_MODULES ) }
         model.eval().cpu()
-        # Get grad_fn from prunable modules
         grad_fn_to_module = {}
 
         visited = {}
@@ -425,7 +407,6 @@ class DependencyGraph(object):
         for hook in hooks:
             hook.remove()
         reused = [ m for (m, count) in visited.items() if count>1 ]
-        # create nodes and dummy modules
         module_to_node = {}
         def _build_graph(grad_fn):
             module = grad_fn_to_module.get( grad_fn, None )   
@@ -434,20 +415,20 @@ class DependencyGraph(object):
             
             if module is None:
                 if not hasattr(grad_fn, 'name'):
-                    module = _ElementWiseOp() # skip customized modules
+                    module = _ElementWiseOp()
                     if self.verbose:
                         print("[Warning] Unrecognized operation: %s. It will be treated as element-wise op"%( str(grad_fn) ))
-                elif 'catbackward' in grad_fn.name().lower(): # concat op
+                elif 'catbackward' in grad_fn.name().lower(): 
                     module = _ConcatOp()
                 elif 'splitbackward' in grad_fn.name().lower():
                     module = _SplitOp()
                 else:
-                    module = _ElementWiseOp()   # All other ops are treated as element-wise ops
-                grad_fn_to_module[ grad_fn ] = module # record grad_fn
+                    module = _ElementWiseOp()   
+                grad_fn_to_module[ grad_fn ] = module
 
             if module not in module_to_node:
                 node = Node( module, grad_fn, self._module_to_name.get( module, None ) )
-                if type(module) in self.CUSTOMIZED_OP_FN.keys(): # mark it as a customized OP
+                if type(module) in self.CUSTOMIZED_OP_FN.keys(): 
                     node.type = OPTYPE.CUSTOMIZED
                     node.customized_op_fn = self.CUSTOMIZED_OP_FN[type(module)]
                 module_to_node[ module ] = node
@@ -457,7 +438,7 @@ class DependencyGraph(object):
             if hasattr(grad_fn, 'next_functions'):
                 for f in grad_fn.next_functions:
                     if f[0] is not None:
-                        if hasattr( f[0], 'name' ) and 'accumulategrad' in f[0].name().lower(): # skip leaf variables
+                        if hasattr( f[0], 'name' ) and 'accumulategrad' in f[0].name().lower():
                             continue
                         input_node = _build_graph(f[0])
                         node.add_input( input_node )
@@ -480,7 +461,7 @@ class DependencyGraph(object):
         visited = set()
         fc_in_features = fc_node.module.in_features
         feature_channels = _get_out_channels_of_in_node(fc_node.inputs[0])
-        if feature_channels<=0: # the first layer: https://github.com/VainF/Torch-Pruning/issues/21
+        if feature_channels<=0: 
             return
         stride = fc_in_features // feature_channels
         if stride>1:

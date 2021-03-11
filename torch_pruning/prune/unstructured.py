@@ -35,12 +35,6 @@ def mask_weight(layer, mask, inplace=True):
     return layer
 
 def mask_bias(layer, mask, inplace=True):
-    """Unstructed pruning for convolution layer
-
-    Args:
-        layer: a convolution layer.
-        mask: 0-1 mask.
-    """
     if not inplace:
         layer = deepcopy(layer)
     if layer.bias is None or mask.shape != layer.bias.shape:
