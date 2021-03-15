@@ -5,6 +5,7 @@ import models.densenet as dn
 from models.c3d import C3D
 from models.densenet import densenet88, densenet121
 from models.convlstm import ConvLSTM
+from models.resnext import ResNeXt, resnext101, resnext50
 import os
 
 g_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -71,3 +72,21 @@ def densenet_lean(config):
     params = dn.get_fine_tuning_params(model, ft_begin_idx)
 
     return model, params
+
+
+def resnext(config, model_path = None):
+    device = config.device
+    sample_size = config.sample_size[0]
+    sample_duration = config.sample_duration
+
+    model = resnext101(num_classes=2, sample_size = sample_size, sample_duration=sample_duration)
+
+    if model_path:
+        state_dict = torch.load(model_path)
+        model.load_state_dict(state_dict)
+    
+    params = model.parameters()
+    return model, params
+
+
+

@@ -1,39 +1,96 @@
 import random
+import math
 
 
-def crop(frames, start, size, stride):
-    while start + (size - 1) * stride > len(frames) - 1:
-        frames *= 2
-    return frames[start:start + (size - 1) * stride + 1:stride]
+class LoopPadding(object):
 
-
-class BeginCrop(object):
-    def __init__(self, size, stride=1):
+    def __init__(self, size, downsample):
         self.size = size
-        self.stride = stride
+        self.downsample = downsample
 
-    def __call__(self, frames):
-        return crop(frames, 0, self.size, self.stride)
+    def __call__(self, frame_indices):
+        vid_duration  = len(frame_indices)
+        clip_duration = self.size * self.downsample
+        out = frame_indices
+
+        for index in out:
+            if len(out) >= clip_duration:
+                break
+            out.append(index)
+
+        selected_frames = [out[i] for i in range(0, clip_duration, self.downsample)]
+
+        return out
 
 
-class CenterCrop(object):
-    def __init__(self, size, stride=1):
+class TemporalBeginCrop(object):
+    def __init__(self, size, downsample):
         self.size = size
-        self.stride = stride
+        self.downsample = downsample
 
-    def __call__(self, frames):
-        start = max(0, len(frames) // 2 - self.size * self.stride // 2)
-        return crop(frames, start, self.size, self.stride)
+    def __call__(self, frame_indices):
+        vid_duration  = len(frame_indices)
+        clip_duration = self.size * self.downsample
+
+        out = frame_indices[:clip_duration]
+
+        for index in out:
+            if len(out) >= clip_duration:
+                break
+            out.append(index)
+
+        selected_frames = [out[i] for i in range(0, clip_duration, self.downsample)]
+
+        return selected_frames
 
 
-class RandomCrop(object):
-    def __init__(self, size, stride=1):
+class TemporalCenterCrop(object):
+
+    def __init__(self, size, downsample):
         self.size = size
-        self.stride = stride
+        self.downsample = downsample
 
-    def __call__(self, frames):
-        start = random.randint(
-            0, max(0,
-                   len(frames) - 1 - (self.size - 1) * self.stride)
-        )
-        return crop(frames, start, self.size, self.stride)
+    def __call__(self, frame_indices):
+        vid_duration  = len(frame_indices)
+        clip_duration = self.size * self.downsample
+
+        center_index = len(frame_indices) // 2
+        begin_index = max(0, center_index - (clip_duration // 2))
+        end_index = min(begin_index + clip_duration, vid_duration)
+
+        out = frame_indices[begin_index:end_index]
+
+        for index in out:
+            if len(out) >= clip_duration:
+                break
+            out.append(index)
+
+        selected_frames = [out[i] for i in range(0, clip_duration, self.downsample)]
+
+        return selected_frames
+
+
+class TemporalRandomCrop(object):
+
+    def __init__(self, size, downsample):
+        self.size = size
+        self.downsample = downsample
+
+    def __call__(self, frame_indices):
+        vid_duration  = len(frame_indices)
+        clip_duration = self.size * self.downsample
+
+        rand_end = max(0, vid_duration - clip_duration - 1)
+        begin_index = random.randint(0, rand_end)
+        end_index = min(begin_index + clip_duration, vid_duration)
+
+        out = frame_indices[begin_index:end_index]
+
+        for index in out:
+            if len(out) >= clip_duration:
+                break
+            out.append(index)
+
+        selected_frames = [out[i] for i in range(0, clip_duration, self.downsample)]
+
+        return selected_frames

@@ -24,6 +24,7 @@ class Config:
     ):
 
         self.model = model
+        self.train_crop = 'random'
 
         self.dataset = dataset
 

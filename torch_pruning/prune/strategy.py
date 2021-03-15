@@ -8,12 +8,12 @@ class BaseStrategy(ABC):
         return self.apply(weights, amount=amount)
 
     @abstractclassmethod
-    def apply(self, weights, amount=0.0)->  Sequence[int]:  # return index
+    def apply(self, weights, amount=0.0)->  Sequence[int]:
         raise NotImplementedError
 
 class RandomStrategy(BaseStrategy):
 
-    def apply(self, weights, amount=0.0)->  Sequence[int]:  # return index
+    def apply(self, weights, amount=0.0)->  Sequence[int]: 
         if amount<=0: return []
         n = len(weights)
         n_to_prune = int(amount*n)
@@ -24,7 +24,7 @@ class LNStrategy(BaseStrategy):
     def __init__(self, p):
         self.p = p
 
-    def apply(self, weights, amount=0.0)->  Sequence[int]:  # return index
+    def apply(self, weights, amount=0.0)->  Sequence[int]: 
         if amount<=0: return []
         n = len(weights)
         l1_norm = torch.norm(weights.view(n, -1), p=self.p, dim=1 )
@@ -42,6 +42,8 @@ class L1Strategy(LNStrategy):
 class L2Strategy(LNStrategy):
     def __init__(self):
         super(L2Strategy, self).__init__(p=2)
+
+#TODO 
         
         
         

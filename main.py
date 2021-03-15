@@ -8,9 +8,9 @@ from epoch import train, val, test
 from model import C3D, ConvLSTM, densenet, densenet_lean
 from dataset import RWF2000
 from config import Config
-
+import numpy as np
 from spatial_transforms import Compose, ToTensor, Normalize
-from spatial_transforms import GroupRandomHorizontalFlip, GroupRandomScaleCenterCrop, GroupScaleCenterCrop
+from spatial_transforms import *
 from temporal_transforms import CenterCrop, RandomCrop
 from target_transforms import Label, Video
 
@@ -18,7 +18,6 @@ from utils import Log
 g_path = os.path.dirname(os.path.abspath(__file__))
 import torch_pruning as tp
 print('main g_path:', g_path)
-import numpy as np
 # g_path = "."
 
 def prune_model(model, prune_prob = 0.1):
@@ -44,11 +43,11 @@ def main(config):
         model, params = densenet(config)
     elif config.model == 'densenet_lean':
         model, params = densenet_lean(config)
+    elif config.model == 'resnext':
+        model, params = resnext(config)
     else:
         model, params = densenet_lean(config)
     
-    
-
     dataset = config.dataset
     sample_size = config.sample_size
     stride = config.stride
@@ -56,13 +55,25 @@ def main(config):
 
     cv = config.num_cv
 
-    crop_method = GroupRandomScaleCenterCrop(size=sample_size)
-    norm = Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
+    # crop_method = GroupRandomScaleCenterCrop(size=sample_size)
+    crop_method = MultiScaleRandomCrop(config.scales, config.sample_size[0])
+    # norm = Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
+
+    norm = Normalize([114.7748, 107.7354, 99.475], [1, 1, 1])
+    # spatial_transform = Compose(
+    #     [crop_method,
+    #      GroupRandomHorizontalFlip(),
+    #      ToTensor(1), norm])
     spatial_transform = Compose(
-        [crop_method,
-         GroupRandomHorizontalFlip(),
-         ToTensor(), norm])
-    temporal_transform = RandomCrop(size=sample_duration, stride=stride)
+        [
+            RandomHorizontalFlip(),
+            crop_method,
+            ToTensor(config.norm_value),
+            norm
+        ]
+    )
+    # temporal_transform = RandomCrop(size=sample_duration, stride=stride)
+    temporal_transform = TemporalRandomCrop(config.sample_duration, config.downsample)
     target_transform = Label()
 
     train_batch = config.train_batch
@@ -124,7 +135,7 @@ def main(config):
     optimizer = torch.optim.SGD(params=params,
                                 lr=learning_rate,
                                 momentum=momentum,
-                                weight_decay=weight_decay)
+                                weight_decay=weight_decay,dampening=False,nesterov=False)
 
     # optimizer = torch.optim.Adam(params=params, lr = learning_rate, weight_decay= weight_decay)
 
@@ -168,7 +179,7 @@ def main(config):
 if __name__ == '__main__':
     device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
     config = Config(
-        'densenet_lean', 
+        'resnext', 
         'rwf-2000',
         device=device,
         num_epoch=10,
