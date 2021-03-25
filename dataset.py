@@ -1,170 +1,114 @@
-import os
-import json
-from PIL import Image
+from datasets.kinetics import Kinetics
+from datasets.ucf101 import UCF101
+from datasets.jester import Jester
 
-import torch
-from torch.utils.data import Dataset
-import numpy as np
+def get_training_set(opt, spatial_transform, temporal_transform,
+                     target_transform):
+    assert opt.dataset in ['kinetics', 'jester', 'ucf101']
 
-def imread(path):
-    with Image.open(path) as img:
-        return img.convert('RGB')
-
-
-def video_loader(video_dir_path, frame_indices):
-    video = []
-    for i in frame_indices:
-        image_path = os.path.join(video_dir_path, 'image_{:05d}.jpg'.format(i))
-        if os.path.exists(image_path):
-            video.append(imread(image_path))
-        else:
-            return video
-
-    return video
-
-
-def n_frames_loader(file_path):
-    with open(file_path, 'r') as input_file:
-        n = input_file.read().rstrip("\n\r")
-        try:
-            return int(input_file.read().rstrip("\n\r"))
-        except:
-            # print(type(n))
-            # print(file_path)
-            return int(n)
-
-
-def load_annotation_data(data_file_path):
-    with open(data_file_path, 'r') as data_file:
-        return json.load(data_file)
+    if opt.dataset == 'kinetics':
+        training_data = Kinetics(
+            opt.video_path,
+            opt.annotation_path,
+            'training',
+            spatial_transform=spatial_transform,
+            temporal_transform=temporal_transform,
+            target_transform=target_transform,
+            sample_duration=opt.sample_duration)
+    elif opt.dataset == 'jester':
+        training_data = Jester(
+            opt.video_path,
+            opt.annotation_path,
+            'training',
+            spatial_transform=spatial_transform,
+            temporal_transform=temporal_transform,
+            target_transform=target_transform,
+            sample_duration=opt.sample_duration)
+    elif opt.dataset == 'ucf101':
+        training_data = UCF101(
+            opt.video_path,
+            opt.annotation_path,
+            'training',
+            spatial_transform=spatial_transform,
+            temporal_transform=temporal_transform,
+            target_transform=target_transform,
+            sample_duration=opt.sample_duration)
+    return training_data
 
 
-def get_labels(data):
-    class_labels_map = {}
-    index = 0
-    for class_label in data['labels']:
-        class_labels_map[class_label] = index
-        index += 1
-    return class_labels_map
+def get_validation_set(opt, spatial_transform, temporal_transform,
+                       target_transform):
+    assert opt.dataset in ['kinetics', 'jester', 'ucf101']
+
+    if opt.dataset == 'kinetics':
+        validation_data = Kinetics(
+            opt.video_path,
+            opt.annotation_path,
+            'validation',
+            opt.n_val_samples,
+            spatial_transform,
+            temporal_transform,
+            target_transform,
+            sample_duration=opt.sample_duration)
+    elif opt.dataset == 'jester':
+        validation_data = Jester(
+            opt.video_path,
+            opt.annotation_path,
+            'validation',
+            opt.n_val_samples,
+            spatial_transform,
+            temporal_transform,
+            target_transform,
+            sample_duration=opt.sample_duration)
+    elif opt.dataset == 'ucf101':
+        validation_data = UCF101(
+            opt.video_path,
+            opt.annotation_path,
+            'validation',
+            opt.n_val_samples,
+            spatial_transform,
+            temporal_transform,
+            target_transform,
+            sample_duration=opt.sample_duration)
+    return validation_data
 
 
-def get_video_names_and_labels(data, subset):
-    video_names = []
-    video_labels = []
+def get_test_set(opt, spatial_transform, temporal_transform, target_transform):
+    assert opt.dataset in ['kinetics', 'jester', 'ucf101']
+    assert opt.test_subset in ['val', 'test']
 
-    for key, val in data['database'].items():
-        if val['subset'] == subset:
-            label = val['annotations']['label']
-            video_names.append(key)
-            video_labels.append(label)
-
-    return video_names, video_labels
-
-
-def make_dataset(root_path, annotation_path, subset, dataset_name):
-
-    data = load_annotation_data(annotation_path)
-
-    video_names, video_labels = get_video_names_and_labels(data, subset)
-
-    # print('video_names:', video_names)
-    # print('video_labels:', video_labels)
-
-    class_to_index = get_labels(data)
-    index_to_class = {}
-    for name, label in class_to_index.items():
-        index_to_class[label] = name
-
-    dataset = []
-    if dataset_name == 'rwf-2000':
-      for video_name, video_label in zip(video_names, video_labels):
-        video_path = os.path.join(
-            root_path, video_name
-        )
-        # print('video_path:', video_path)
-        if not os.path.exists(video_path):
-            continue
-
-        n_frames = int(n_frames_loader(os.path.join(video_path, 'n_frames')))
-
-        video = {
-            'name': video_name,
-            'path': video_path,
-            'label': class_to_index[video_label],
-            'n_frames': n_frames
-        }
-
-        dataset.append(video)
-    else:
-      for video_name, video_label in zip(video_names, video_labels):
-          video_path = os.path.join(
-              root_path, video_label, video_name
-          )
-        #   print('video_path:', video_path)
-          if not os.path.exists(video_path):
-              continue
-
-          n_frames = int(n_frames_loader(os.path.join(video_path, 'n_frames')))
-
-          video = {
-              'name': video_name,
-              'path': video_path,
-              'label': class_to_index[video_label],
-              'n_frames': n_frames
-          }
-
-          dataset.append(video)
-    # print('dataset: ', dataset)
-
-    return dataset, index_to_class
-
-
-class RWF2000(Dataset):
-    def __init__(
-        self,
-        root_path,
-        annotation_path,
-        subset,
-        spatial_transform=None,
-        temporal_transform=None,
-        target_transform=None,
-        dataset_name=''
-    ):
-
-        self.videos, self.classes = make_dataset(
-            root_path, annotation_path, subset, dataset_name
-        )
-
-        # print('self.videos: ', self.videos)
-
-        self.spatial_transform = spatial_transform
-        self.temporal_transform = temporal_transform
-        self.target_transform = target_transform
-
-        self.loader = video_loader
-
-    def __getitem__(self, index):
-
-        path = self.videos[index]['path']
-        n_frames = self.videos[index]['n_frames']
-        frames = list(range(1, 1 + n_frames))
-
-        if self.temporal_transform:
-            frames = self.temporal_transform(frames)
-
-        clip = self.loader(path, frames)
-
-        # clip list of images (H, W, C)
-        if self.spatial_transform:
-            clip = self.spatial_transform(clip)
-
-        # clip: lists of tensors(C, H, W)
-        clip = torch.stack(clip).permute(1, 0, 2, 3)
-
-        target = self.videos[index]
-        if self.target_transform:
-            target = self.target_transform(target)
-        return clip, target
-
-    def __len__(self):
-        return len(self.videos)
+    if opt.test_subset == 'val':
+        subset = 'validation'
+    elif opt.test_subset == 'test':
+        subset = 'testing'
+    if opt.dataset == 'kinetics':
+        test_data = Kinetics(
+            opt.video_path,
+            opt.annotation_path,
+            subset,
+            0,
+            spatial_transform,
+            temporal_transform,
+            target_transform,
+            sample_duration=opt.sample_duration)
+    elif opt.dataset == 'jester':
+        test_data = Jester(
+            opt.video_path,
+            opt.annotation_path,
+            subset,
+            0,
+            spatial_transform,
+            temporal_transform,
+            target_transform,
+            sample_duration=opt.sample_duration)
+    elif opt.dataset == 'ucf101':
+        test_data = UCF101(
+            opt.video_path,
+            opt.annotation_path,
+            subset,
+            0,
+            spatial_transform,
+            temporal_transform,
+            target_transform,
+            sample_duration=opt.sample_duration)
+    return test_data

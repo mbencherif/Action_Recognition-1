@@ -24,6 +24,15 @@ class LoopPadding(object):
 
 
 class TemporalBeginCrop(object):
+    """Temporally crop the given frame indices at a beginning.
+
+    If the number of frames is less than the size,
+    loop the indices as many times as necessary to satisfy the size.
+
+    Args:
+        size (int): Desired output size of the crop.
+    """
+
     def __init__(self, size, downsample):
         self.size = size
         self.downsample = downsample
@@ -45,12 +54,26 @@ class TemporalBeginCrop(object):
 
 
 class TemporalCenterCrop(object):
+    """Temporally crop the given frame indices at a center.
+
+    If the number of frames is less than the size,
+    loop the indices as many times as necessary to satisfy the size.
+
+    Args:
+        size (int): Desired output size of the crop.
+    """
 
     def __init__(self, size, downsample):
         self.size = size
         self.downsample = downsample
 
     def __call__(self, frame_indices):
+        """
+        Args:
+            frame_indices (list): frame indices to be cropped.
+        Returns:
+            list: Cropped frame indices.
+        """
         vid_duration  = len(frame_indices)
         clip_duration = self.size * self.downsample
 
@@ -71,12 +94,27 @@ class TemporalCenterCrop(object):
 
 
 class TemporalRandomCrop(object):
+    """Temporally crop the given frame indices at a random location.
+
+    If the number of frames is less than the size,
+    loop the indices as many times as necessary to satisfy the size.
+
+    Args:
+        size (int): Desired output size of the crop.
+    """
 
     def __init__(self, size, downsample):
         self.size = size
         self.downsample = downsample
 
     def __call__(self, frame_indices):
+        """
+        Args:
+            frame_indices (list): frame indices to be cropped.
+        Returns:
+            list: Cropped frame indices.
+        """
+
         vid_duration  = len(frame_indices)
         clip_duration = self.size * self.downsample
 
