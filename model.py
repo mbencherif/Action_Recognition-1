@@ -138,8 +138,8 @@ def generate_model(opt):
             if opt.model == 'x3d':
                 LONG_CYCLE = [8, 4, 2, 1]
                 pretrain = torch.load(opt.pretrain_path)
-                cur_long_ind = pretrain['long_ind']
-                bn_splits = x3d.update_bn_splits_long_cycle(LONG_CYCLE[cur_long_ind])
+                # cur_long_ind = pretrain['long_ind']
+                # bn_splits = x3d.update_bn_splits_long_cycle(LONG_CYCLE[cur_long_ind])
                 model.load_state_dict(pretrain['model_state_dict'])
                 model.cuda()
                 parameters = model.get_parameters()
