@@ -5,8 +5,8 @@ from torch import nn
 from model import *
 
 def generate_model(opt):
-    assert opt.model in ['c3d', 'squeezenet', 'mobilenet', 'resnext', 'resnet',
-                         'shufflenet', 'mobilenetv2', 'shufflenetv2', 'x3d']
+    # assert opt.model in ['c3d', 'squeezenet', 'mobilenet', 'resnext', 'resnet',
+    #                      'shufflenet', 'mobilenetv2', 'shufflenetv2', 'x3d']
 
 
     if opt.model == 'c3d':
