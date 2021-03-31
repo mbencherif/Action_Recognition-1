@@ -181,7 +181,7 @@ class ResNet(nn.Module):
                  shortcut_type='B',
                  widen_factor=1.0,
                  dropout=0.5,
-                 n_classes=400,
+                 n_classes=2,
                  base_bn_splits=8,
                  task='class'):
         super(ResNet, self).__init__()
