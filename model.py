@@ -142,7 +142,7 @@ def generate_model(opt):
                 # bn_splits = x3d.update_bn_splits_long_cycle(LONG_CYCLE[cur_long_ind])
                 # model.load_state_dict(pretrain['model_state_dict'])
                 model.cuda()
-                parameters = model.get_parameters()
+                parameters = model.parameters()
             else:
                 model = model.cuda()
                 pretrain = torch.load(opt.pretrain_path, map_location=torch.device('cpu'))
