@@ -364,6 +364,6 @@ def get_blocks(version):
     return blocks[version]
 
 
-def generate_model(x3d_version, **kwargs):
+def X3D(x3d_version, **kwargs):
     model = ResNet(Bottleneck, get_blocks(x3d_version), get_inplanes(x3d_version), **kwargs)
     return model

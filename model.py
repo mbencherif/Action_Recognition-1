@@ -121,7 +121,7 @@ def generate_model(opt):
                                                 length=1)
     elif opt.model == 'x3d':
         assert opt.model_version in ['S', 'M', 'XL']
-        model = generate_model(opt.model_version)
+        model = X3D(opt.model_version)
 
 
 
