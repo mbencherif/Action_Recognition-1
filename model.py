@@ -2,7 +2,7 @@ import torch
 from torch import nn
 
 # from models import c3d, squeezenet, mobilenet, shufflenet, mobilenetv2, shufflenetv2, resnext, resnet
-from model import *
+from models import *
 
 def generate_model(opt):
     # assert opt.model in ['c3d', 'squeezenet', 'mobilenet', 'resnext', 'resnet',
@@ -121,7 +121,7 @@ def generate_model(opt):
                                                 length=1)
     elif opt.model == 'x3d':
         assert opt.model_version in ['S', 'M', 'XL']
-        model = generate_model(opt.model_version)
+        model = generate_model(opt.model_version, n_classes=opt.n_classes)
 
 
 
