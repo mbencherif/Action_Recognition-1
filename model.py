@@ -140,7 +140,7 @@ def generate_model(opt):
                 pretrain = torch.load(opt.pretrain_path)
                 # cur_long_ind = pretrain['long_ind']
                 # bn_splits = x3d.update_bn_splits_long_cycle(LONG_CYCLE[cur_long_ind])
-                model.load_state_dict(pretrain['model_state_dict'])
+                # model.load_state_dict(pretrain['model_state_dict'])
                 model.cuda()
                 parameters = model.get_parameters()
             else:
