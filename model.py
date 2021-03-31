@@ -6,7 +6,7 @@ from model import *
 
 def generate_model(opt):
     assert opt.model in ['c3d', 'squeezenet', 'mobilenet', 'resnext', 'resnet',
-                         'shufflenet', 'mobilenetv2', 'shufflenetv2']
+                         'shufflenet', 'mobilenetv2', 'shufflenetv2', 'x3d']
 
 
     if opt.model == 'c3d':
@@ -119,39 +119,53 @@ def generate_model(opt):
         model = rgb_resneXt3D64f101_bert10_FRMB(num_classes=opt.n_classes, 
                                                 modelPath = "weights/resnext-101-64f-kinetics.pth",
                                                 length=1)
+    elif opt.model == 'x3d':
+        assert opt.model_version in ['S', 'M', 'XL']
+        model = generate_model(opt.model_version, num_classes=opt.n_classes)
 
 
 
     if not opt.no_cuda:
-        model = model.cuda()
-        model = nn.DataParallel(model, device_ids=None)
+        # model = model.cuda()
+        # model = nn.DataParallel(model, device_ids=None)
         pytorch_total_params = sum(p.numel() for p in model.parameters() if
                                p.requires_grad)
         print("Total number of trainable parameters: ", pytorch_total_params)
 
         if opt.pretrain_path:
             print('loading pretrained model {}'.format(opt.pretrain_path))
-            pretrain = torch.load(opt.pretrain_path, map_location=torch.device('cpu'))
-            assert opt.arch == pretrain['arch']
-            model.load_state_dict(pretrain['state_dict'])
 
-            if opt.model in  ['mobilenet', 'mobilenetv2', 'shufflenet', 'shufflenetv2']:
-                model.module.classifier = nn.Sequential(
-                                nn.Dropout(0.9),
-                                nn.Linear(model.module.classifier[1].in_features, opt.n_finetune_classes))
-                model.module.classifier = model.module.classifier.cuda()
-            elif opt.model == 'squeezenet':
-                model.module.classifier = nn.Sequential(
-                                nn.Dropout(p=0.5),
-                                nn.Conv3d(model.module.classifier[1].in_channels, opt.n_finetune_classes, kernel_size=1),
-                                nn.ReLU(inplace=True),
-                                nn.AvgPool3d((1,4,4), stride=1))
-                model.module.classifier = model.module.classifier.cuda()
+            if opt.model == 'x3d':
+                LONG_CYCLE = [8, 4, 2, 1]
+                pretrain = torch.load(opt.pretrain_path)
+                cur_long_ind = pretrain['long_ind']
+                bn_splits = x3d.update_bn_splits_long_cycle(LONG_CYCLE[cur_long_ind])
+                model.load_state_dict(pretrain['model_state_dict'])
+                model.cuda()
+                parameters = model.get_parameters()
             else:
-                model.module.fc = nn.Linear(model.module.fc.in_features, opt.n_finetune_classes)
-                model.module.fc = model.module.fc.cuda()
+                model = model.cuda()
+                pretrain = torch.load(opt.pretrain_path, map_location=torch.device('cpu'))
+                assert opt.arch == pretrain['arch']
+                model.load_state_dict(pretrain['state_dict'])
 
-            parameters = get_fine_tuning_parameters(model, opt.ft_portion)
+                if opt.model in  ['mobilenet', 'mobilenetv2', 'shufflenet', 'shufflenetv2']:
+                    model.module.classifier = nn.Sequential(
+                                    nn.Dropout(0.9),
+                                    nn.Linear(model.module.classifier[1].in_features, opt.n_finetune_classes))
+                    model.module.classifier = model.module.classifier.cuda()
+                elif opt.model == 'squeezenet':
+                    model.module.classifier = nn.Sequential(
+                                    nn.Dropout(p=0.5),
+                                    nn.Conv3d(model.module.classifier[1].in_channels, opt.n_finetune_classes, kernel_size=1),
+                                    nn.ReLU(inplace=True),
+                                    nn.AvgPool3d((1,4,4), stride=1))
+                    model.module.classifier = model.module.classifier.cuda()
+                else:
+                    model.module.fc = nn.Linear(model.module.fc.in_features, opt.n_finetune_classes)
+                    model.module.fc = model.module.fc.cuda()
+
+                parameters = get_fine_tuning_parameters(model, opt.ft_portion)
             return model, parameters
     else:
         if opt.pretrain_path:

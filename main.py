@@ -166,7 +166,7 @@ if __name__ == '__main__':
                 'state_dict': model.state_dict(),
                 'optimizer': optimizer.state_dict(),
                 'best_prec1': best_prec1
-                }
+            }
             save_checkpoint(state, False, opt)
             
         if not opt.no_val:

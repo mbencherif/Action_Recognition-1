@@ -68,6 +68,8 @@ def parse_opts():
     parser.add_argument('--width_mult', default=1.0, type=float, help='The applied width multiplier to scale number of filters')
     parser.add_argument('--manual_seed', default=1, type=int, help='Manually set random seed')
 
+    parser.add_argument('--model_version', default="S", type=str, help="Version for x3d model")
+
     args = parser.parse_args()
 
     return args
